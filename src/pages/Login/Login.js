@@ -22,14 +22,14 @@ function Login() {
     >
       <MDBRow>
         <MDBCol md="6" className=" d-flex flex-column justify-content-center">
-          <div className="container">
+          <div className="container m-0">
             <img src={student_on_laptop} className="student_on_laptop"></img>
           </div>
         </MDBCol>
 
         <MDBCol md="6" className="" >
           <MDBCard className="my-5 card">
-            <MDBCardBody className="p-5" >
+            <MDBCardBody className="p-4" >
               <MDBRow>
                 {/* <MDBCol col='6'>
                  
