@@ -1,6 +1,6 @@
 import "./Login.css";
-import student_on_laptop from "./assests/CollabSphereLogin.svg";
-import logo from './assests/CollabSphereLogo.svg';
+import student_on_laptop from "../../Assets/CollabSphereLogin.svg";
+import logo from '../../Assets/CollabSphereLogo.svg';
 import React from "react";
 import {
   MDBBtn,
@@ -22,7 +22,7 @@ function Login() {
     >
       <MDBRow>
         <MDBCol md="6" className=" d-flex flex-column justify-content-center">
-          <div className="container m-0">
+          <div className="container m-2">
             <img src={student_on_laptop} className="student_on_laptop"></img>
           </div>
         </MDBCol>
