@@ -1,4 +1,6 @@
 import HomeNav from "../../components/HomeNav/HomeNav";
+
+
 function Home()
 {
     return(

@@ -1,0 +1,12 @@
+.nav-link{
+  
+ 
+   min-width: 150px;
+   text-align: center;
+}
+
+.nav-link.active{
+  
+  background: #FF7F7F;
+  color: white !important;
+ }
