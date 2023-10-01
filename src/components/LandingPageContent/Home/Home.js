@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 
 import "./Home.css";
+import zIndex from "@mui/material/styles/zIndex";
 
 function createRoom(room) {
   return (
@@ -78,6 +79,7 @@ function Home() {
           position: "fixed",
           right: "20px",
           bottom: "25px",
+          zIndex:'3'
         }}
       >
         <Button
