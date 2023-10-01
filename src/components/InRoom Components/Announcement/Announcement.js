@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import AnnouncementCards from "./AnnouncementCards";
 import AnnouncementContent from "./AnnouncementContent";
 import Button from "@mui/material/Button";
-import CampaignRoundedIcon from '@mui/icons-material/CampaignRounded';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import Input from '@mui/material/Input';
+import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
 import './Announcement.css';
+import { useDropzone } from "react-dropzone";
 
 function createAnnouncementCards(AnnouncementCard) {
   return (
@@ -36,11 +36,6 @@ const Announcement = () => {
     setFile(null);
   };
 
-  const handleFileUpload = (event) => {
-    const selectedFile = event.target.files[0];
-    setFile(selectedFile);
-  };
-
   const handleSendMessage = () => {
     // Handle sending the message and file here
     // You can use 'message' and 'file' state values
@@ -50,10 +45,18 @@ const Announcement = () => {
     setOpen(false);
   };
 
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: ".pdf,.doc,.docx,.jpg,.png",
+    onDrop: (acceptedFiles) => {
+      // Handle the dropped file(s) here
+      setFile(acceptedFiles[0]);
+    },
+  });
+
   return (
     <div>
       <Button
-        className="mx-1 p-1 join-room"
+        className="mx-1 p-1 announcement"
         style={{
           display: "flow-root",
           position: "fixed",
@@ -66,18 +69,18 @@ const Announcement = () => {
           width: "60px",
           boxShadow: "0px 0px 1px 1px #ff7f7f",
         }}
-        onClick={announceMessage} // Open the dialog on button click
+        onClick={announceMessage}
       >
         <CampaignRoundedIcon style={{ color: 'ff7f7f', fontSize: '40px' }} />
       </Button>
 
       {AnnouncementContent.map(createAnnouncementCards)}
 
-      {/* Dialog */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Announcement</DialogTitle>
         <DialogContent>
-          <TextField className="mt-2 mb-2"
+          <TextField
+            className="mt-2 mb-2"
             label="Create an announcement"
             fullWidth
             multiline
@@ -85,18 +88,16 @@ const Announcement = () => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-          <Input className="w-100 p-2" style={{}}
-             fullWidth
-            type="file"
-            accept=".pdf,.doc,.docx,.jpg,.png"
-            onChange={handleFileUpload}
-          />
+          <div {...getRootProps()} className="dropzone">
+            <input {...getInputProps()} />
+            <p>Drag and drop files here, or click to select files</p>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button  onClick={handleClose} style={{color:"black"}}>
+          <Button onClick={handleClose} style={{ color: "black" }}>
             Cancel
           </Button>
-          <Button className='DialogButtonAnnouncement' onClick={handleSendMessage} color="primary">
+          <Button className="DialogButtonAnnouncement" onClick={handleSendMessage} color="primary">
             Send
           </Button>
         </DialogActions>

@@ -13,10 +13,20 @@
     /* Set the hover background color */
 }
 
-
-
-  .MuiInput-root {
-    border-bottom: 0px solid black !important;
+/* Announcement.css */
+.dropzone {
+    border: 2px dashed #aaa;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
   }
+  
+  .dropzone p {
+    margin: 0;
+  }
+  
+
+
+ 
 
  
