@@ -1,0 +1,22 @@
+
+.DialogButtonAnnouncement {
+    color: #ff7f7f !important;
+    /* Set the default text color */
+    transition: background-color 0.3s ease;
+    /* Add a transition for hover effect */
+}
+
+/* Define styles for the button on hover */
+.DialogButtonAnnouncement:hover {
+    color: white !important;
+    background-color: #ff7f7f !important;
+    /* Set the hover background color */
+}
+
+
+
+  .MuiInput-root {
+    border-bottom: 0px solid black !important;
+  }
+
+ 

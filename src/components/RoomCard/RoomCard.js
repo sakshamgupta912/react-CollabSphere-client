@@ -5,12 +5,14 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { Link } from "react-router-dom"; // Import Link from React Router
 
 import "./RoomCard.css";
 
 export default function RoomCard(props) {
   return (
-    <Card className="m-4 RoomCard" >
+    <Link to='/InRoom' className="RoomCardLink d-flex justify-content-center" style={{width:'100%'}}>
+    <Card className="my-2 RoomCard" >
       <CardMedia sx={{ height: 100 }} image={props.image} />
       <CardContent>
         <Typography
@@ -43,5 +45,6 @@ export default function RoomCard(props) {
         </Button>
       </CardActions>
     </Card>
+    </Link>
   );
 }
