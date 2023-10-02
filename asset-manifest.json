@@ -1,0 +1,29 @@
+{
+  "files": {
+    "main.css": "/react-CollabSphere-client/static/css/main.a3de5e84.css",
+    "main.js": "/react-CollabSphere-client/static/js/main.14b8f892.js",
+    "static/media/CollabSphereLogin.svg": "/react-CollabSphere-client/static/media/CollabSphereLogin.83b7ba9b8ab17354546f7ed2767b8645.svg",
+    "static/media/fa-solid-900.ttf": "/react-CollabSphere-client/static/media/fa-solid-900.d75e3fd1eb12e9bd6655.ttf",
+    "static/media/fa-brands-400.ttf": "/react-CollabSphere-client/static/media/fa-brands-400.016b4a6cdced82ab3aa1.ttf",
+    "static/media/fa-solid-900.woff2": "/react-CollabSphere-client/static/media/fa-solid-900.b6879d41b0852f01ed5b.woff2",
+    "static/media/React.jpg": "/react-CollabSphere-client/static/media/React.36a9ed4ee07e58b5c82d.jpg",
+    "static/media/fa-brands-400.woff2": "/react-CollabSphere-client/static/media/fa-brands-400.878f31251d960bd6266f.woff2",
+    "static/media/English.jpg": "/react-CollabSphere-client/static/media/English.ce3a1e580fea61b9b4bf.jpg",
+    "static/media/History.jpg": "/react-CollabSphere-client/static/media/History.88645244b1c61b12bf8a.jpg",
+    "static/media/fa-regular-400.ttf": "/react-CollabSphere-client/static/media/fa-regular-400.50701fbb8177c2dde530.ttf",
+    "static/media/Maths.jpg": "/react-CollabSphere-client/static/media/Maths.a0f7bedeb2ab543b2123.jpg",
+    "static/media/Science.webp": "/react-CollabSphere-client/static/media/Science.c74f1bee67a38c5765b2.webp",
+    "static/media/fa-regular-400.woff2": "/react-CollabSphere-client/static/media/fa-regular-400.b041b1fa4fe241b23445.woff2",
+    "static/media/CollabSphereLogo.svg": "/react-CollabSphere-client/static/media/CollabSphereLogo.302474ff5bc101f4fb44f5c855fcebf2.svg",
+    "static/media/CollabSphereLogoLinear.svg": "/react-CollabSphere-client/static/media/CollabSphereLogoLinear.d5223bc18319dfb19e12d81b34947f55.svg",
+    "static/media/fa-v4compatibility.ttf": "/react-CollabSphere-client/static/media/fa-v4compatibility.c6a0c95b0a95c4553700.ttf",
+    "static/media/fa-v4compatibility.woff2": "/react-CollabSphere-client/static/media/fa-v4compatibility.1bac2991f3dbfa237aec.woff2",
+    "index.html": "/react-CollabSphere-client/index.html",
+    "main.a3de5e84.css.map": "/react-CollabSphere-client/static/css/main.a3de5e84.css.map",
+    "main.14b8f892.js.map": "/react-CollabSphere-client/static/js/main.14b8f892.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a3de5e84.css",
+    "static/js/main.14b8f892.js"
+  ]
+}
