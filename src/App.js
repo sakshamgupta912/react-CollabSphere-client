@@ -17,7 +17,7 @@ function App() {
             <Route path='/Login' element ={<Login/>} />
             <Route path='/LandingPage' element ={<LandingPage />} />
             <Route path='/InRoom' element ={<InRoom />} />
-            <Route path='*' element ={<NoPage/>} />
+            <Route path='/*' element ={<NoPage/>} />
         </Routes>
       </HashRouter>
     </div>

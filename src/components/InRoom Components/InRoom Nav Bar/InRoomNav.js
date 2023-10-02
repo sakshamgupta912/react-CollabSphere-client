@@ -28,7 +28,7 @@ function NavBar({ tabs, currentTabIndex, onTabChange }) {
     <MDBNavbar expand="lg" light bgColor="light" className='p-0' >
     
       <MDBContainer fluid>
-        <MDBNavbarBrand href="./landingpage" style={{ height:'40px'}}>
+        <MDBNavbarBrand href="/#/landingpage" style={{ height:'40px'}}>
           <ArrowBackIcon/>
         </MDBNavbarBrand>
         
