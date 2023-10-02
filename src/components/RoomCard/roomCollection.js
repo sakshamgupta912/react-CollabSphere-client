@@ -17,17 +17,16 @@ const roomCollection = [
         teacherName: 'Dr. Smith',
         image: 'https://picsum.photos/300/100'
     },
-
     {
         id: 4,
-        roomName: 'Science Lab',
-        teacherName: 'Dr. Smith',
+        roomName: 'History Class',
+        teacherName: 'Mr. Davis',
         image: 'https://picsum.photos/300/100'
     },
     {
         id: 5,
-        roomName: 'Science Lab',
-        teacherName: 'Dr. Smith',
+        roomName: 'English Literature',
+        teacherName: 'Ms. Williams',
         image: 'https://picsum.photos/300/100'
     },
     // Add more elements as needed
