@@ -27,7 +27,8 @@ import card from "@material-tailwind/react/theme/components/card";
 const Assignment = () => {
  
   function createAssignmentCard(AssignmentCard) {
-
+    
+ 
     const setInAssignmentPage = () => {
       setPageContent(<InAssignment AssignmentTitle={AssignmentCard.AssignmentTitle}
         dueDate={AssignmentCard.dueDate}
@@ -35,16 +36,21 @@ const Assignment = () => {
         setCardsPage={setCardsPage} 
         grade={AssignmentCard.grade} 
         desc={AssignmentCard.desc}
+        
         />);
     };
 
+    var randomNumber = Math.floor(Math.random() * 4);
     return (
+      
       <AssignmentCards
+      
         key={AssignmentCard.id}
         AssignmentTitle={AssignmentCard.AssignmentTitle}
         dueDate={AssignmentCard.dueDate}
         dueTime={AssignmentCard.dueTime}
         setInAssignmentPage={setInAssignmentPage}
+        randomNumber={randomNumber}
       />
     );
   }
