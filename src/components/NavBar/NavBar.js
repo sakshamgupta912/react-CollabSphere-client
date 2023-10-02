@@ -1,4 +1,4 @@
-import logo from '../../Assets/CollabSphereLogo.svg';
+import logo from '../../Assets/CollabSphereLogoLinear.svg';
 import './NavBar.css';
 import React, { useState } from "react";
 
@@ -31,11 +31,12 @@ function NavBar({ currentTab, onTabChange }) {
 
   return (
     <MDBNavbar expand="lg" light bgColor="light" className='p-0'>
+    <img src={logo} style={{position:'absolute',height:'50px',top:'1',left:'5px'}}/>
       <MDBContainer fluid>
         <MDBNavbarBrand href="#">
           <img
-            src={logo}
-            height='30'
+           
+            height='32'
             alt=''
           />
         </MDBNavbarBrand>

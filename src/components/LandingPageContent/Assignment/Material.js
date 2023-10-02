@@ -10,9 +10,6 @@ import {
 } from "mdb-react-ui-kit";
 import FilePresentIcon from "@mui/icons-material/FilePresent";
 
-import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
-
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function Material(props) {
   return (

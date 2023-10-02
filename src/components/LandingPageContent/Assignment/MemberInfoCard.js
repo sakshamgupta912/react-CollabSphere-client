@@ -1,12 +1,6 @@
 import React from 'react';
 import {
-    MDBCard,
-    MDBCardBody,
-    MDBCardTitle,
-    MDBCardSubTitle,
-    MDBCardText,
-    MDBCardLink,
-    MDBCardFooter,
+    MDBCardSubTitle, 
   } from "mdb-react-ui-kit";
   import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
