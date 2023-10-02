@@ -30,12 +30,16 @@ const MemberInfoCard = (props) => {
     >
       <div className="col-6 d-flex justify-content-start align-items-center">
         <AccountCircleIcon style={{ fontSize: "40px" }} />
-        <MDBCardSubTitle className="p-0 m-0">{props.name}</MDBCardSubTitle>
+        <MDBCardSubTitle className="p-0 m-0" style={{whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"}}>{props.name}</MDBCardSubTitle>
       </div>
       <div className="col-6 d-flex justify-content-end align-items-center">
         <MDBCardSubTitle
           className="p-0 mx-2 my-0"
-          style={{ fontStyle: "oblique", fontWeight: "lighter" }}
+          style={{ fontStyle: "oblique", fontWeight: "lighter" ,whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"}}
         >
           {props.email}
         </MDBCardSubTitle>
