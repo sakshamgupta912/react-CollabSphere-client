@@ -20,19 +20,46 @@ import Dropzone from "react-dropzone";
 import { Box } from "@mui/material";
 
 import './Assignment.css';
+import InAssignment from "./InAssignment";
+import card from "@material-tailwind/react/theme/components/card";
 
-function createAssignmentCard(AssignmentCard) {
-  return (
-    <AssignmentCards
-      key={AssignmentCard.id}
-      AssignmentTitle={AssignmentCard.AssignmentTitle}
-      dueDate={AssignmentCard.dueDate}
-      dueTime={AssignmentCard.dueTime}
-    />
-  );
-}
 
 const Assignment = () => {
+ 
+  function createAssignmentCard(AssignmentCard) {
+
+    const setInAssignmentPage = () => {
+      setPageContent(<InAssignment AssignmentTitle={AssignmentCard.AssignmentTitle}
+        dueDate={AssignmentCard.dueDate}
+        dueTime={AssignmentCard.dueTime}  
+        setCardsPage={setCardsPage} 
+        grade={AssignmentCard.grade} 
+        desc={AssignmentCard.desc}
+        />);
+    };
+
+    return (
+      <AssignmentCards
+        key={AssignmentCard.id}
+        AssignmentTitle={AssignmentCard.AssignmentTitle}
+        dueDate={AssignmentCard.dueDate}
+        dueTime={AssignmentCard.dueTime}
+        setInAssignmentPage={setInAssignmentPage}
+      />
+    );
+  }
+ 
+  const setCardsPage = () => {
+    setPageContent(cards);
+  };
+  
+   
+  const cards = AssignmentContent.map(createAssignmentCard);
+
+ 
+  
+  const [pageContent, setPageContent] = useState(cards);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
     title: "",
@@ -93,28 +120,33 @@ const Assignment = () => {
     setIsDialogOpen(false);
   };
 
+  const addAssignmentButton =(<Button
+    className="mx-1 p-1 add-assignment "
+    style={{
+      display: "flow-root",
+      position: "fixed",
+      right: "20px",
+      bottom: "25px",
+      zIndex: "3",
+      background: "white",
+      borderRadius: "90%",
+      height: "60px",
+      width: "60px",
+      boxShadow: "0px 0px 1px 1px #ff7f7f",
+    }}
+    onClick={handleDialogOpen}
+  >
+    <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
+  </Button>
+);
+const [showAddAssginmentButton,setshowAddAssginmentButton]=useState(addAssignmentButton);
+
+
   return (
     <div>
-      <Button
-        className="mx-1 p-1 add-assignment "
-        style={{
-          display: "flow-root",
-          position: "fixed",
-          right: "20px",
-          bottom: "25px",
-          zIndex: "3",
-          background: "white",
-          borderRadius: "90%",
-          height: "60px",
-          width: "60px",
-          boxShadow: "0px 0px 1px 1px #ff7f7f",
-        }}
-        onClick={handleDialogOpen}
-      >
-        <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
-      </Button>
-
-      {AssignmentContent.map(createAssignmentCard)}
+    {(pageContent)==(cards)?addAssignmentButton:(<></>)}
+      
+      {pageContent}
 
       <Dialog open={isDialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Add Assignment</DialogTitle>

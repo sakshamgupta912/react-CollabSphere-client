@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@mui/material";
 import {
   MDBCard,
   MDBCardHeader,
@@ -9,13 +10,18 @@ import {
   MDBCardFooter,
 } from "mdb-react-ui-kit";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-
+import InAssignment from "./InAssignment";
 var randomNumber = Math.floor(Math.random() * 4);
 var bgColor = ["#ffc09f", "#ffee93", "#fcf5c7", "#a0ced9", "#adf7b6"];
+var clicked=false;
+
 
 export default function AssignmentCards(props) {
+  console.log(props.onClick);
   return (
-    <MDBCard className="my-3" style={{ background: bgColor[randomNumber] }}>
+
+    <Button onClick={() => props.setInAssignmentPage()} className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',borderRadius:'20px'}}>
+    <MDBCard className=" w-100" style={{ background: bgColor[randomNumber] }}>
       <MDBCardBody className="d-flex justify-content-center align-items-center">
         <div
           className="col-6 d-flex justify-content-start align-items-center"
@@ -52,5 +58,7 @@ export default function AssignmentCards(props) {
         </div>
       </MDBCardBody>
     </MDBCard>
+    </Button>
+
   );
 }
