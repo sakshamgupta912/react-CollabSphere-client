@@ -31,7 +31,7 @@ function NavBar({ currentTab, onTabChange }) {
 
   return (
     <MDBNavbar expand="lg" light bgColor="light" className='p-0'>
-    <img src={logo} style={{position:'absolute',height:'50px',top:'1',left:'5px'}}/>
+    <img src={logo} style={{position:'absolute',height:'50px',top:'-3px',left:'5px'}}/>
       <MDBContainer fluid>
         <MDBNavbarBrand href="#">
           <img
