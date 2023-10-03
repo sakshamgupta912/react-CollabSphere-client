@@ -86,8 +86,9 @@ const InAssignment = (props) => {
             <Material fileName="notes.pdf" />
             <Material fileName="book.pdf" />
           </MDBCardFooter>
+          <Button className="DialogButtonAnnouncement">Submit</Button>
         </MDBCard>
-
+        
         <MDBCard className="my-2">
           <div className="d-flex justify-content-center">
             <Button className="DialogButtonAnnouncement " onClick={()=>{setStudentList(<SubmittedBy/>)}}>
