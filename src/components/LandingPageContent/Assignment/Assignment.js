@@ -136,7 +136,7 @@ const Assignment = () => {
 
 
   return (
-    <div className="m-5">
+    <div className="m-3">
    
       
       {pageContent}

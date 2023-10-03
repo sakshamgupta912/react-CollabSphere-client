@@ -10,6 +10,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import "./Home.css";
+import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
 import zIndex from "@mui/material/styles/zIndex";
 
 function createRoom(room) {
@@ -33,21 +35,42 @@ function createRoom(room) {
 }
 
 function Home() {
+  const navigate = useNavigate();
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
   const [classCode, setClassCode] = useState("");
+  const [joinAlert, setJoinAlert] = useState(false);
+  const [createAlert, setCreateAlert] = useState(false);
+
+  function hasWhiteSpace(s) {
+    return /\s/g.test(s);
+  }
 
   const handleOpenJoinDialog = () => {
     setJoinDialogOpen(true);
   };
 
   const handleCloseJoinDialog = () => {
+    setJoinAlert(false);
+    setClassCode("");
     setJoinDialogOpen(false);
   };
 
   const handleJoinClass = () => {
     // Handle joining the class with the entered classCode
-    console.log(`Joining class with code: ${classCode}`);
-    handleCloseJoinDialog();
+    if (classCode.length !== 6) {
+      setJoinAlert(
+        <Alert severity="error">Code should be 6 character long!</Alert>
+      );
+      console.error("Code should be 6 character long!");
+    } else if (hasWhiteSpace(classCode)) {
+      setJoinAlert(
+        <Alert severity="error">Code should not contain spaces!</Alert>
+      );
+    } else {
+      console.log(`Joining class with code: ${classCode}`);
+      handleCloseJoinDialog();
+      navigate("/landingpage");
+    }
   };
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -58,13 +81,21 @@ function Home() {
   };
 
   const handleCloseCreateDialog = () => {
+    setCreateAlert(false);
+    setRoomName("");
     setCreateDialogOpen(false);
   };
 
   const handleCreateRoom = () => {
     // Handle creating the room with the entered roomName
-    console.log(`Creating room with name: ${roomName}`);
-    handleCloseCreateDialog();
+    if (roomName.length === 0) {
+      setCreateAlert(
+        <Alert severity="error">Room name should not be empty!</Alert>
+      );
+    } else {
+      handleCloseCreateDialog();
+      navigate("/landingpage");
+    }
   };
 
   return (
@@ -166,6 +197,7 @@ function Home() {
         onClose={handleCloseJoinDialog}
         style={{}}
       >
+        {joinAlert}
         <DialogTitle>Join Class</DialogTitle>
         <DialogContent className="dialog-content ">
           <TextField
@@ -180,6 +212,7 @@ function Home() {
           <Button
             className="DialogButtonCancel"
             onClick={handleCloseJoinDialog}
+            type="reset"
           >
             Cancel
           </Button>
@@ -187,6 +220,7 @@ function Home() {
             className="DialogButtonJoin"
             onClick={handleJoinClass}
             color="primary"
+            type="submit"
           >
             Join
           </Button>
@@ -194,6 +228,7 @@ function Home() {
       </Dialog>
 
       <Dialog open={createDialogOpen} onClose={handleCloseCreateDialog}>
+        {createAlert}
         <DialogTitle>Create Room</DialogTitle>
         <DialogContent className="dialog-content">
           <TextField
@@ -211,7 +246,7 @@ function Home() {
           >
             Cancel
           </Button>
-          <Button className="DialogButtonCreate" onClick={handleCreateRoom}>
+          <Button className="DialogButtonCreate" onClick={handleCreateRoom} type="submit">
             Create
           </Button>
         </DialogActions>

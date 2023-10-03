@@ -9,6 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
+import { Alert } from "@mui/material";
 import './Announcement.css';
 import { useDropzone } from "react-dropzone";
 
@@ -25,12 +26,14 @@ const Announcement = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
+  const [announcementAlert, setAnnouncementAlert] = useState(false);
 
   const announceMessage = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
+    setAnnouncementAlert(false);
     setOpen(false);
     setMessage('');
     setFile(null);
@@ -40,9 +43,14 @@ const Announcement = () => {
     // Handle sending the message and file here
     // You can use 'message' and 'file' state values
     // Reset the form and close the dialog afterward
-    setMessage('');
-    setFile(null);
-    setOpen(false);
+    if(message.length === 0){
+      setAnnouncementAlert(<Alert severity="error">Message should not be empty!</Alert>)
+    }else{
+      setAnnouncementAlert(false);
+      setMessage('');
+      setFile(null);
+      setOpen(false);
+    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -77,6 +85,7 @@ const Announcement = () => {
       {AnnouncementContent.map(createAnnouncementCards)}
 
       <Dialog open={open} onClose={handleClose}>
+        {announcementAlert}
         <DialogTitle>Announcement</DialogTitle>
         <DialogContent>
           <TextField

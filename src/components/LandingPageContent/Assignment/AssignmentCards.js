@@ -21,7 +21,7 @@ export default function AssignmentCards(props) {
   console.log(props.onClick);
   return (
 
-    <Button onClick={() => props.setInAssignmentPage()} className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',borderRadius:'20px'}}>
+    <Button onClick={() => props.setInAssignmentPage()} className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',maxWidth:'100%',borderRadius:'20px'}}>
     <MDBCard className=" w-100" style={{ backgroundColor: bgColor[props.randomNumber]}}>
       <MDBCardBody className="d-flex justify-content-center align-items-center">
         <div

@@ -91,6 +91,8 @@ function Login() {
                   name="password"
                   id="password"
                   type="password"
+                  minLength={6}
+                  maxLength={20}
                   value={formData.password}
                   onChange={handleChange}
                   required
