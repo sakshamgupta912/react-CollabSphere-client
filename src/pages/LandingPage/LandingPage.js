@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import NavBar from "../../components/NavBar/NavBar";
 import Home from "../../components/LandingPageContent/Home/Home";
 import Assignment from "../../components/LandingPageContent/Assignment/Assignment";
-import Chat from "../../components/LandingPageContent/Chat/Chat";
+import ChatComponent from "../../components/LandingPageContent/Chat/ChatComponent";
 import { MDBContainer } from 'mdb-react-ui-kit';
 
 function LandingPage() {
@@ -23,7 +23,7 @@ function LandingPage() {
       content = <Assignment />;
       break;
     case "chat":
-      content = <Chat />;
+      content = <ChatComponent />;
       break;
     default:
       content = <Home />; // Default to Home if currentTab doesn't match any case
