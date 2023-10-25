@@ -1,32 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AnnouncementCards from "./AnnouncementCards";
-import AnnouncementContent from "./AnnouncementContent";
+// import AnnouncementContent from "./AnnouncementContent";
 import Button from "@mui/material/Button";
 import CampaignRoundedIcon from "@mui/icons-material/CampaignRounded";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import { Alert } from "@mui/material";
-import './Announcement.css';
+import "./Announcement.css";
 import { useDropzone } from "react-dropzone";
+import Cookies from "js-cookie";
+import axios from "../../../api/axios";
+import { nanoid } from "nanoid";
 
-function createAnnouncementCards(AnnouncementCard) {
-  return (
-    <AnnouncementCards
-      senderName={AnnouncementCard.senderName}
-      message={AnnouncementCard.message}
-    />
-  );
-}
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
 
-const Announcement = () => {
+const Announcement = (props) => {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
   const [announcementAlert, setAnnouncementAlert] = useState(false);
+  const [AnnouncementContent, setAnnouncementContent] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [update, setUpdate] = useState(0)
+
+  function createAnnouncementCards(AnnouncementCard) {
+    return (
+      <AnnouncementCards
+        postID={AnnouncementCard._id}
+        senderName={AnnouncementCard.createdBy.name}
+        createdBy={AnnouncementCard.createdBy._id}
+        message={AnnouncementCard.content}
+        fileName={AnnouncementCard?.files[0]?.originalname}
+        fileId={AnnouncementCard.files[0]?._id}
+        isAdmin={isAdmin}
+      />
+    );
+  }
+
+  useEffect(() => {
+    async function getAnnouncements() {
+      const response = await axios.post(
+        "/api/teams/teamPosts",
+        JSON.stringify({ teamID: props?.roomId }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log(response.data);
+        setIsAdmin(response.data.isAdmin);
+        setAnnouncementContent(response.data.teamPosts);
+      }
+    }
+
+    getAnnouncements();
+  }, [update]);
 
   const announceMessage = () => {
     setOpen(true);
@@ -35,21 +73,39 @@ const Announcement = () => {
   const handleClose = () => {
     setAnnouncementAlert(false);
     setOpen(false);
-    setMessage('');
+    setMessage("");
     setFile(null);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     // Handle sending the message and file here
     // You can use 'message' and 'file' state values
     // Reset the form and close the dialog afterward
-    if(message.length === 0){
-      setAnnouncementAlert(<Alert severity="error">Message should not be empty!</Alert>)
-    }else{
-      setAnnouncementAlert(false);
-      setMessage('');
-      setFile(null);
-      setOpen(false);
+    if (message.length === 0) {
+      setAnnouncementAlert(
+        <Alert severity="error">Message should not be empty!</Alert>
+      );
+    } else {
+      const formData = new FormData();
+      formData.append("teamID", props?.roomId);
+      formData.append("content", message);
+      formData.append("files", file);
+
+      const response = await axios.post("/api/post/createPost", formData, {
+        headers: {
+          authorization: `Token ${token}`,
+          uid: uid,
+          uploadid: nanoid(),
+        },
+      });
+
+      if (response.status === 200) {
+        setAnnouncementAlert(false);
+        setMessage("");
+        setFile(null);
+        setOpen(false);
+        setUpdate(update+1)
+      }
     }
   };
 
@@ -79,10 +135,16 @@ const Announcement = () => {
         }}
         onClick={announceMessage}
       >
-        <CampaignRoundedIcon style={{ color: 'ff7f7f', fontSize: '40px' }} />
+        <CampaignRoundedIcon style={{ color: "ff7f7f", fontSize: "40px" }} />
       </Button>
 
-      {AnnouncementContent.map(createAnnouncementCards)}
+      {AnnouncementContent.length == 0 ? (
+        <div className="container d-flex align-items-center nothing-here" >
+          <div className="mx-auto" >Looks Like there are no posts here!</div>
+        </div>
+      ) : (
+        AnnouncementContent.map(createAnnouncementCards)
+      )}
 
       <Dialog open={open} onClose={handleClose}>
         {announcementAlert}
@@ -106,7 +168,11 @@ const Announcement = () => {
           <Button onClick={handleClose} style={{ color: "black" }}>
             Cancel
           </Button>
-          <Button className="DialogButtonAnnouncement" onClick={handleSendMessage} color="primary">
+          <Button
+            className="DialogButtonAnnouncement"
+            onClick={handleSendMessage}
+            color="primary"
+          >
             Send
           </Button>
         </DialogActions>

@@ -13,7 +13,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 const MemberInfoCard = (props) => {
 
   var bgColor = "white";
-  if (props.type === "Leader") {
+  if (props.type === "admin") {
     bgColor = "#ffcaca";
   } else {
     bgColor = "white";

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RoomCard from "../../RoomCard/RoomCard";
-import roomCollection from "../../RoomCard/roomCollection";
+// import roomCollection from "../../RoomCard/roomCollection";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -12,7 +12,9 @@ import PersonAddAltRoundedIcon from "@mui/icons-material/PersonAddAltRounded";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "@mui/material";
-import zIndex from "@mui/material/styles/zIndex";
+import Cookies from "js-cookie";
+import axios from "../../../api/axios";
+// import zIndex from "@mui/material/styles/zIndex";
 
 function createRoom(room) {
   return (
@@ -26,13 +28,18 @@ function createRoom(room) {
     >
       <RoomCard
         className=""
-        roomName={room.roomName}
-        teacherName={room.teacherName}
+        roomId={room._id}
+        roomCode={room.code}
+        roomName={room.name}
+        teacherName={room.createdBy.name}
         image={room.image}
       />
     </Grid>
   );
 }
+
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
 
 function Home() {
   const navigate = useNavigate();
@@ -40,6 +47,30 @@ function Home() {
   const [classCode, setClassCode] = useState("");
   const [joinAlert, setJoinAlert] = useState(false);
   const [createAlert, setCreateAlert] = useState(false);
+  const [roomCollection, setRoomCollection] = useState([]);
+
+  useEffect(() => {
+    async function getTeams() {
+      const response = await axios.post(
+        "/api/teams/getTeams",
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        setRoomCollection(response.data);
+      }
+    }
+
+    getTeams();
+  }, []);
 
   function hasWhiteSpace(s) {
     return /\s/g.test(s);
@@ -55,7 +86,7 @@ function Home() {
     setJoinDialogOpen(false);
   };
 
-  const handleJoinClass = () => {
+  const handleJoinClass = async () => {
     // Handle joining the class with the entered classCode
     if (classCode.length !== 6) {
       setJoinAlert(
@@ -67,9 +98,22 @@ function Home() {
         <Alert severity="error">Code should not contain spaces!</Alert>
       );
     } else {
-      console.log(`Joining class with code: ${classCode}`);
-      handleCloseJoinDialog();
-      navigate("/landingpage");
+      const response = await axios.post(
+        "/api/teams/joinTeam",
+        JSON.stringify({ code: classCode }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        handleCloseJoinDialog();
+        navigate("/landingpage");
+      }
     }
   };
 
@@ -86,15 +130,29 @@ function Home() {
     setCreateDialogOpen(false);
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async () => {
     // Handle creating the room with the entered roomName
     if (roomName.length === 0) {
       setCreateAlert(
         <Alert severity="error">Room name should not be empty!</Alert>
       );
     } else {
-      handleCloseCreateDialog();
-      navigate("/landingpage");
+      const response = await axios.post(
+        "/api/teams/createTeams",
+        JSON.stringify({ name: roomName }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        navigate("/landingpage");
+        handleCloseCreateDialog();
+      }
     }
   };
 
@@ -246,7 +304,11 @@ function Home() {
           >
             Cancel
           </Button>
-          <Button className="DialogButtonCreate" onClick={handleCreateRoom} type="submit">
+          <Button
+            className="DialogButtonCreate"
+            onClick={handleCreateRoom}
+            type="submit"
+          >
             Create
           </Button>
         </DialogActions>

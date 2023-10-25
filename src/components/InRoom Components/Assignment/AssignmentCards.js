@@ -10,6 +10,7 @@ import {
   MDBCardFooter,
 } from "mdb-react-ui-kit";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import dayjs from "dayjs";
 import InAssignment from "./InAssignment";
 
 var bgColor = ["#ffc09f", "#ffee93", "#fcf5c7", "#a0ced9", "#adf7b6"];
@@ -17,11 +18,9 @@ var clicked=false;
 
 
 export default function AssignmentCards(props) {
-
-  console.log(props.onClick);
   return (
 
-    <Button onClick={() => props.setInAssignmentPage()} className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',borderRadius:'20px'}}>
+    <Button onClick={() => props.setInAssignmentPage()} className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',maxWidth:'100%',borderRadius:'20px'}}>
     <MDBCard className=" w-100" style={{ backgroundColor: bgColor[props.randomNumber]}}>
       <MDBCardBody className="d-flex justify-content-center align-items-center">
         <div
@@ -47,7 +46,7 @@ export default function AssignmentCards(props) {
               className="m-0 p-0"
               style={{ fontStyle: "oblique", display: "" }}
             >
-              Due on {props.dueDate}
+              Due on {dayjs(props.dueDate).format('llll')}
             </p>
             <p
               className="m-0 p-0"

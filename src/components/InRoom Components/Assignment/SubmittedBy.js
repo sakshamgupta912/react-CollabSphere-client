@@ -9,10 +9,10 @@ function createContactCard(Contact)
         <MemberInfoCard name={Contact.name} email={Contact.email}/>
     );
 }
-const SubmittedBy = () => {
+const SubmittedBy = (props) => {
   return (
     <div>
-    {SubmittedByContent.map(createContactCard)}
+    {props.list.map(createContactCard)}
     </div>
   )
 }

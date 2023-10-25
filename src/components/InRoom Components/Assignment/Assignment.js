@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AssignmentCards from "./AssignmentCards";
-import AssignmentContent from "./AssignmentContent";
+// import AssignmentContent from "./AssignmentContent";
 import Button from "@mui/material/Button";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 import Dialog from "@mui/material/Dialog";
@@ -8,45 +8,43 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
-import dayjs from 'dayjs';
-import { DemoContainer, DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
-import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
-import { StaticDateTimePicker } from '@mui/x-date-pickers/StaticDateTimePicker';
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
 import Dropzone from "react-dropzone";
 import { Box } from "@mui/material";
-
-import './Assignment.css';
+import Cookies from "js-cookie";
+import axios from "../../../api/axios";
+import "./Assignment.css";
 import InAssignment from "./InAssignment";
 import card from "@material-tailwind/react/theme/components/card";
+import { nanoid } from "nanoid";
 
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
 
-const Assignment = () => {
- 
+const Assignment = (props) => {
   function createAssignmentCard(AssignmentCard) {
-    
- 
     const setInAssignmentPage = () => {
-      setPageContent(<InAssignment AssignmentTitle={AssignmentCard.AssignmentTitle}
-        dueDate={AssignmentCard.dueDate}
-        dueTime={AssignmentCard.dueTime}  
-        setCardsPage={setCardsPage} 
-        grade={AssignmentCard.grade} 
-        desc={AssignmentCard.desc}
-        
-        />);
+      setPageContent(
+        <InAssignment
+          id={AssignmentCard._id}
+          AssignmentTitle={AssignmentCard.title}
+          dueDate={AssignmentCard.dueDate}
+          dueTime={AssignmentCard.dueTime}
+          setCardsPage={setCardsPage}
+          grade={AssignmentCard.grade}
+          desc={AssignmentCard.desc}
+        />
+      );
     };
 
     var randomNumber = Math.floor(Math.random() * 4);
     return (
-      
       <AssignmentCards
-      
-        key={AssignmentCard.id}
-        AssignmentTitle={AssignmentCard.AssignmentTitle}
+        id={AssignmentCard._id}
+        AssignmentTitle={AssignmentCard.title}
         dueDate={AssignmentCard.dueDate}
         dueTime={AssignmentCard.dueTime}
         setInAssignmentPage={setInAssignmentPage}
@@ -54,26 +52,54 @@ const Assignment = () => {
       />
     );
   }
- 
+
+  const [AssignmentContent, setAssignmentContent] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pageContent, setPageContent] = useState(null);
+  const [update, setUpdate] = useState(0)
+  let cards;
+
+  useEffect(() => {
+    async function getAnnouncements() {
+      const response = await axios.post(
+        "/api/teams/teamAssignments",
+        JSON.stringify({ teamID: props?.roomId }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status === 200) {
+        setIsAdmin(response.data.isAdmin);
+        setAssignmentContent(response.data.teamAssignments);
+        setPageContent(response.data.teamAssignments.map(createAssignmentCard))
+        cards = response.data.teamAssignments.map(createAssignmentCard);
+
+        // setAnnouncementContent(response.data.teamPosts);
+      }
+    }
+
+    getAnnouncements();
+  }, [update]);
+
   const setCardsPage = () => {
     setPageContent(cards);
   };
-  
-   
-  const cards = AssignmentContent.map(createAssignmentCard);
-
- 
-  
-  const [pageContent, setPageContent] = useState(cards);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [assignmentData, setAssignmentData] = useState({
     title: "",
     description: "",
-    dateAndTime:null,
+    dateAndTime: null,
     grade: "",
     files: [],
   });
+  const currentDateTime = getDateTime();
 
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
@@ -94,7 +120,7 @@ const Assignment = () => {
   const handleDueDateChange = (date) => {
     setAssignmentData({
       ...assignmentData,
-      dueDate: date,
+      dateAndTime: date,
     });
   };
 
@@ -112,47 +138,85 @@ const Assignment = () => {
     });
   };
 
-  const handleAddAssignment = () => {
+  const handleAddAssignment = async () => {
     // Handle adding the assignment data to your content or API here
-    console.log("Assignment data:", assignmentData);
+    console.log(assignmentData.dateAndTime);
+    const formData = new FormData();
+    formData.append("teamID", props?.roomId);
+    formData.append("title", assignmentData.title);
+    formData.append("description", assignmentData.description);
+    formData.append("grade", assignmentData.grade);
+    formData.append("dueDate", assignmentData.dateAndTime);
+    formData.append("files", assignmentData.files[0]);
+
+    const response = await axios.post(
+      "/api/assignment/createAssignment",
+      formData,
+      {
+        headers: {
+          authorization: `Token ${token}`,
+          uid: uid,
+          uploadid: nanoid(),
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      setAssignmentData({
+        title: "",
+        description: "",
+        dateAndTime: null,
+        grade: "",
+        files: [],
+      });
+      setIsDialogOpen(false);
+      setUpdate(update+1)
+    }
     // Clear the form and close the dialog
-    setAssignmentData({
-      title: "",
-      description: "",
-      dateAndTime: null,
-      grade: "",
-      files: [],
-    });
-    setIsDialogOpen(false);
   };
 
-  const addAssignmentButton =(<Button
-    className="mx-1 p-1 add-assignment "
-    style={{
-      display: "flow-root",
-      position: "fixed",
-      right: "20px",
-      bottom: "25px",
-      zIndex: "3",
-      background: "white",
-      borderRadius: "90%",
-      height: "60px",
-      width: "60px",
-      boxShadow: "0px 0px 1px 1px #ff7f7f",
-    }}
-    onClick={handleDialogOpen}
-  >
-    <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
-  </Button>
-);
-const [showAddAssginmentButton,setshowAddAssginmentButton]=useState(addAssignmentButton);
+  const addAssignmentButton = (
+    <Button
+      className="mx-1 p-1 add-assignment "
+      style={{
+        display: "flow-root",
+        position: "fixed",
+        right: "20px",
+        bottom: "25px",
+        zIndex: "3",
+        background: "white",
+        borderRadius: "90%",
+        height: "60px",
+        width: "60px",
+        boxShadow: "0px 0px 1px 1px #ff7f7f",
+      }}
+      onClick={handleDialogOpen}
+    >
+      <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
+    </Button>
+  );
+  const [showAddAssginmentButton, setshowAddAssginmentButton] =
+    useState(addAssignmentButton);
 
+  function getDateTime() {
+    const temp = new Date();
+    const day = temp.getUTCDay();
+    const month = temp.getUTCMonth();
+    const year = temp.getFullYear();
+    const hours = temp.getHours();
+    const minutes = temp.getMinutes();
+    const seconds = temp.getSeconds();
+
+    return `"${year}-${month}-${day} ${hours}:${minutes}:${seconds}"`;
+  }
 
   return (
     <div>
-    {(pageContent)==(cards)?addAssignmentButton:(<></>)}
-      
-      {pageContent}
+      {/* {pageContent == cards ? addAssignmentButton : <></>} */}
+
+      <div className="m-3">{pageContent}</div>
+
+      {isAdmin ? addAssignmentButton : <></>}
 
       <Dialog open={isDialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Add Assignment</DialogTitle>
@@ -186,12 +250,28 @@ const [showAddAssginmentButton,setshowAddAssginmentButton]=useState(addAssignmen
             value={assignmentData.grade}
             onChange={handleInputChange}
           />
-          <LocalizationProvider  dateAdapter={AdapterDayjs}>
-
-          <MobileDateTimePicker  className='my-2'  value={assignmentData.dateAndTime}/>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <MobileDateTimePicker
+              className="my-2"
+              format="DD-MM-YYYY HH:mm "
+              label="Due Date"
+              slotProps={{
+                textField: {
+                  helperText: "MM/DD/YYYY",
+                },
+              }}
+              value={assignmentData.dateAndTime}
+              onChange={(newValue) =>
+                setAssignmentData({
+                  ...assignmentData,
+                  dateAndTime: newValue,
+                })
+              }
+              minDateTime={dayjs(currentDateTime)}
+              // defaultValue={currentDateTime}
+            />
           </LocalizationProvider>
-     
-          
+
           <Dropzone onDrop={handleFilesDrop}>
             {({ getRootProps, getInputProps }) => (
               <section>
@@ -212,10 +292,13 @@ const [showAddAssginmentButton,setshowAddAssginmentButton]=useState(addAssignmen
           </Dropzone>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDialogClose} style={{color:"black"}}>
+          <Button onClick={handleDialogClose} style={{ color: "black" }}>
             Cancel
           </Button>
-          <Button onClick={handleAddAssignment} className='DialogButtonAnnouncement'>
+          <Button
+            onClick={handleAddAssignment}
+            className="DialogButtonAnnouncement"
+          >
             Add
           </Button>
         </DialogActions>

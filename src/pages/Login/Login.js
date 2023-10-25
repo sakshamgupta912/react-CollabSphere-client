@@ -1,7 +1,9 @@
 import "./Login.css";
+import axios from "../../api/axios";
 import student_on_laptop from "../../Assets/CollabSphereLogin.svg";
 import logo from '../../Assets/CollabSphereLogo.svg';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Cookies from 'js-cookie';
 import {
   MDBBtn,
   MDBContainer,
@@ -14,10 +16,21 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { Alert } from "@mui/material";
 
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
+
 // material design for bootstrap
 
 function Login() {
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(token && uid){
+      navigate('/landingpage')
+    }else{
+      navigate('/')
+    }
+  },[])
 
   const [formData, setFormData] = useState({
     email: "",
@@ -34,7 +47,7 @@ function Login() {
     });
   };
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginAlert(false);
 
@@ -47,8 +60,26 @@ function Login() {
     }else if(!checkPassword(formData.password)){
       setLoginAlert(<Alert severity="error">Password cannot be empty</Alert>)
     }else{
-      setLoginAlert(false);
-      navigate('/landingpage');
+      const response = await axios.post(
+        "/api/auth/login",
+        JSON.stringify({ email: formData.email, password: formData.password }),
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
+      if(response.status === 200){
+        setLoginAlert(false);
+        Cookies.set('uid', `${response.data.user._id}`, { expires: 7 });
+        Cookies.set('name', `${response.data.user.name}`, { expires: 7 });
+        Cookies.set('email', `${response.data.user.email}`, { expires: 7 });
+        Cookies.set('token', `${response.data.user.token}`, { expires: 7 });
+        window.location.reload();
+      }else if(response.status === 401){
+        setLoginAlert(<Alert severity="error">Invalid Email Address or Password</Alert>)
+      }else{
+        setLoginAlert(<Alert severity="error">Server error. Try Again!</Alert>)
+      }
     }
   };
   

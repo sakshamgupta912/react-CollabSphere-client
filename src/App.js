@@ -4,6 +4,7 @@ import Login from "./pages/Login/Login"
 import LandingPage from "./pages/LandingPage/LandingPage";
 import InRoom from "./pages/InRoom/InRoom";
 import NoPage from "./pages/NoPage";
+import InAssignment from "./components/LandingPageContent/Assignment/InAssignment";
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path='/index' element ={<Login/>} />
             <Route path='/Login' element ={<Login/>} />
             <Route path='/LandingPage' element ={<LandingPage />} />
+            <Route path='/LandingPage/:id' element ={<InAssignment />} />
             <Route path='/InRoom' element ={<InRoom />} />
             <Route path='/*' element ={<NoPage/>} />
         </Routes>

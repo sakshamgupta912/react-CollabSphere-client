@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   MDBCard,
   MDBCardHeader,
@@ -14,8 +14,55 @@ import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 import Material from "./Material";
+import { Button } from "@mui/material";
+import axios from "../../../api/axios";
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
 
 export default function AnnouncementCards(props) {
+  const [deleteEnable, setDeleteEnable] = useState(false);
+
+  useEffect(() => {
+    if (uid === props.createdBy || props.isAdmin) {
+      setDeleteEnable(true);
+    }
+  }, []);
+
+  const handleDelete = async () => {
+    const response = await axios.post(
+      `/api/post/deletePost`,
+      JSON.stringify({ postID: props?.postID }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Token ${token}`,
+          uid,
+        },
+      }
+    );
+  };
+
+  const handleDownload = async () => {
+    const response = await axios.get(`/api/download`, {
+      responseType: "blob",
+      headers: {
+        authorization: `Token ${token}`,
+        fileid: props.fileId,
+      },
+    });
+    const blob = new Blob([response.data], {
+      type: response.headers["content-type"],
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = props.fileName; // Set the desired file name
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
   return (
     <MDBCard className="my-2">
       <MDBCardHeader className="d-flex p-1 m-1 justify-content-between align-items-center">
@@ -25,26 +72,35 @@ export default function AnnouncementCards(props) {
             {props.senderName}{" "}
           </MDBCardTitle>
         </div>
-
-        <MDBBtn
-          href=""
-          className="p-0 mx-2 "
-          style={{
-           background:'transparent',
-            boxShadow: "0 0px 0px rgba(0, 0, 0, 0)",
-          }}>
-          <DeleteForeverOutlinedIcon  style={{color:'rgb(79, 79, 79)'  }}/>
-        </MDBBtn>
+        {deleteEnable ? (
+          <MDBBtn
+            href=""
+            className="p-0 mx-2 "
+            onClick={handleDelete}
+            style={{
+              background: "transparent",
+              boxShadow: "0 0px 0px rgba(0, 0, 0, 0)",
+            }}
+          >
+            <DeleteForeverOutlinedIcon style={{ color: "rgb(79, 79, 79)" }} />
+          </MDBBtn>
+        ) : (
+          <></>
+        )}
       </MDBCardHeader>
 
       <MDBCardBody>
         <MDBCardText>{props.message}</MDBCardText>
       </MDBCardBody>
-
-
-      <MDBCardFooter >
-        <Material fileName="notes.pdf" />
-      </MDBCardFooter>
+      {props.fileName === undefined ? (
+        <></>
+      ) : (
+        <MDBCardFooter>
+          <Button onClick={handleDownload}>
+            <Material fileName={props.fileName} />
+          </Button>
+        </MDBCardFooter>
+      )}
     </MDBCard>
   );
 }

@@ -2,12 +2,14 @@ import React from "react";
 import { Button } from "@mui/material";
 import {
   MDBCard,
-
   MDBCardBody,
-  
 } from "mdb-react-ui-kit";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import axios from "../../../api/axios";
+import Cookies from "js-cookie";
 
+
+const token = Cookies.get("token");
 
 var bgColor = ["#ffc09f", "#ffee93", "#fcf5c7", "#a0ced9", "#adf7b6"];
 
@@ -34,10 +36,28 @@ export default function FileCard(props) {
     }
     
     // Now the 'bgColor' variable holds the pastel color based on the file type.
+
+    const handleDownload = async () => {
+      const response = await axios.get(`/api/download`, {
+        responseType: 'blob',
+        headers: {
+          authorization: `Token ${token}`,
+          fileid: props.fileLink,
+        },
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = props.fileName; // Set the desired file name
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
     
   return (
     
-    <Button href={props.fileLink} target="_blank" className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',borderRadius:'20px'}}>
+    <Button onClick={handleDownload} target="_blank" className="my-2 p-0" style={{background:'transparent',color:'black',minWidth:'100%',borderRadius:'20px'}}>
     <MDBCard className=" w-100" style={{ backgroundColor: bgColor}}>
       <MDBCardBody className="d-flex justify-content-center align-items-center">
         <div
