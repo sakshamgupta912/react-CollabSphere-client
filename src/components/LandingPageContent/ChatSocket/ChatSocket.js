@@ -64,10 +64,17 @@ const ChatSocket = () => {
     getChats();
     socket.emit("setup", user);
     socket.on("connected", () => {});
-    socket.on("message-received", (newMessageReceived) => {
-      setMessages([...messages, newMessageReceived]);
-    });
+    // socket.on("message-received", (newMessageReceived) => {
+    //   setMessages([...messages, newMessageReceived]);
+    // });
   }, []);
+
+  useEffect(() => {
+    socket.on("message-received", (data) => {
+
+      setMessages([...messages,data]);
+    });
+  }, [socket, messages]);
 
   useEffect(() => {
     async function getMessages() {
@@ -168,7 +175,7 @@ const ChatSocket = () => {
       );
 
       if (response.status === 200) {
-        setSelectedChat(response.data)
+        setSelectedChat(response.data);
         setIsDialogOpen(false);
       }
     }

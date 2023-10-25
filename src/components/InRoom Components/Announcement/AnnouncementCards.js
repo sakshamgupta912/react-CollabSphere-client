@@ -40,6 +40,7 @@ export default function AnnouncementCards(props) {
           authorization: `Token ${token}`,
           uid,
         },
+        validateStatus: () => true
       }
     );
   };

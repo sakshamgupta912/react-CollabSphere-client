@@ -11,6 +11,7 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
+import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
 
 const token = Cookies.get("token");
 const uid = Cookies.get("uid");
@@ -30,6 +31,7 @@ const Files = (props) => {
   const [open, setOpen] = useState(false);
   const [FileContent, setFileContent] = useState([]);
   const [files, setFiles] = useState(null);
+  const [update,setUpdate] = useState(0)
 
   useEffect(() => {
     async function getAnnouncements() {
@@ -55,7 +57,7 @@ const Files = (props) => {
     }
 
     getAnnouncements();
-  }, []);
+  }, [update]);
 
   const addFiles = () => {
     setOpen(true);
@@ -91,7 +93,8 @@ const Files = (props) => {
     });
 
     if(response.status === 200){
-
+      setUpdate(update+1)
+      handleClose()
     }
   };
 
@@ -113,7 +116,7 @@ const Files = (props) => {
         }}
         onClick={addFiles}
       >
-        <CampaignRoundedIcon style={{ color: "ff7f7f", fontSize: "40px" }} />
+        <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
       </Button>
       {FileContent.map(FileCreate)}
       <Dialog open={open} onClose={handleClose}>

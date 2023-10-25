@@ -112,7 +112,7 @@ function Home() {
       );
       if (response.status === 200) {
         handleCloseJoinDialog();
-        navigate("/landingpage");
+        window.location.reload();
       }
     }
   };
@@ -150,7 +150,8 @@ function Home() {
         }
       );
       if (response.status === 200) {
-        navigate("/landingpage");
+        // navigate("/landingpage");
+        window.location.reload();
         handleCloseCreateDialog();
       }
     }
@@ -246,7 +247,7 @@ function Home() {
       </div>
 
       <Grid className="m-0 w-100" container spacing={3}>
-        {roomCollection.map(createRoom)}
+        {roomCollection.length != 0 ? roomCollection.map(createRoom) : <></>}
       </Grid>
 
       <Dialog

@@ -1,4 +1,4 @@
-import "./Login.css";
+import "./Register.css";
 import axios from "../../api/axios";
 import student_on_laptop from "../../Assets/CollabSphereLogin.svg";
 import logo from "../../Assets/CollabSphereLogo.svg";
@@ -21,20 +21,20 @@ const uid = Cookies.get("uid");
 
 // material design for bootstrap
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (token && uid) {
-      navigate("/landingpage");
-    } else {
-      navigate("/");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (token && uid) {
+  //     navigate("/landingpage");
+  //   }
+  // }, []);
 
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    cnfpassword: "",
   });
 
   const [loginAlert, setLoginAlert] = useState(false);
@@ -55,16 +55,24 @@ function Login() {
 
     // If validation passes, you can submit the form or perform other actions
     // For now, let's just log the form data
-    if (!checkEmail(formData.email)) {
+    if (!checkName(formData.name)) {
+      setLoginAlert(<Alert severity="error">Name cannot be empty!</Alert>);
+    } else if (!checkEmail(formData.email)) {
       setLoginAlert(
         <Alert severity="error">Invalid Email Address Format</Alert>
       );
     } else if (!checkPassword(formData.password)) {
       setLoginAlert(<Alert severity="error">Password cannot be empty</Alert>);
+    } else if (formData.password !== formData.cnfpassword) {
+      setLoginAlert(<Alert severity="error">Password does not match!</Alert>);
     } else {
       const response = await axios.post(
-        "/api/auth/login",
-        JSON.stringify({ email: formData.email, password: formData.password }),
+        "/api/auth/register",
+        JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
@@ -73,15 +81,9 @@ function Login() {
       );
       if (response.status === 200) {
         setLoginAlert(false);
-        Cookies.set("uid", `${response.data.user._id}`, { expires: 7 });
-        Cookies.set("name", `${response.data.user.name}`, { expires: 7 });
-        Cookies.set("email", `${response.data.user.email}`, { expires: 7 });
-        Cookies.set("token", `${response.data.user.token}`, { expires: 7 });
-        window.location.reload();
-      } else if (response.status === 401) {
-        setLoginAlert(
-          <Alert severity="error">Invalid Email Address or Password</Alert>
-        );
+        navigate("/");
+      } else if (response.status === 500) {
+        setLoginAlert(<Alert severity="error">Error occured. Try Again</Alert>);
       } else {
         setLoginAlert(<Alert severity="error">Server error. Try Again!</Alert>);
       }
@@ -90,6 +92,14 @@ function Login() {
 
   function checkEmail(email) {
     return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email);
+  }
+
+  function checkName(name) {
+    if (name.length === 0) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   function checkPassword(password) {
@@ -130,6 +140,16 @@ function Login() {
               <form onSubmit={handleSubmit}>
                 <MDBInput
                   wrapperClass="mb-4"
+                  label="Name"
+                  name="name"
+                  id="name"
+                  // type="email"
+                  value={formData.name}
+                  onChange={handleChange}
+                  // required
+                />
+                <MDBInput
+                  wrapperClass="mb-4"
                   label="Email"
                   name="email"
                   id="email"
@@ -150,6 +170,18 @@ function Login() {
                   onChange={handleChange}
                   // required
                 />
+                <MDBInput
+                  wrapperClass="mb-4"
+                  label="Confirm Password"
+                  name="cnfpassword"
+                  id="cnfpassword"
+                  type="password"
+                  // minLength={6}
+                  maxLength={20}
+                  value={formData.cnfpassword}
+                  onChange={handleChange}
+                  // required
+                />
 
                 <MDBBtn
                   type="submit"
@@ -157,7 +189,7 @@ function Login() {
                   size="md"
                   style={{ background: "#FF5757" }}
                 >
-                  Login
+                  Register
                 </MDBBtn>
               </form>
               <MDBBtn
@@ -166,10 +198,10 @@ function Login() {
                 size="md"
                 style={{ background: "grey" }}
                 onClick={()=>{
-                  navigate('/Register')
+                  navigate('/')
                 }}
               >
-                Don't have an account? Register!
+                Already have an account?
               </MDBBtn>
             </MDBCardBody>
           </MDBCard>
@@ -179,4 +211,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;

@@ -1,6 +1,7 @@
 import { HashRouter,Routes,Route } from "react-router-dom";
 
 import Login from "./pages/Login/Login"
+import Register from "./pages/Register/Register"
 import LandingPage from "./pages/LandingPage/LandingPage";
 import InRoom from "./pages/InRoom/InRoom";
 import NoPage from "./pages/NoPage";
@@ -16,6 +17,7 @@ function App() {
             <Route path='/react-CollabSphere-client' element ={<Login/>} />
             <Route path='/index' element ={<Login/>} />
             <Route path='/Login' element ={<Login/>} />
+            <Route path='/Register' element ={<Register/>} />
             <Route path='/LandingPage' element ={<LandingPage />} />
             <Route path='/LandingPage/:id' element ={<InAssignment />} />
             <Route path='/InRoom' element ={<InRoom />} />

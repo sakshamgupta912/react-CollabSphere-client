@@ -11,14 +11,39 @@ import image2 from "../../Assets/Maths.jpg";
 import image3 from "../../Assets/Science.webp";
 import image4 from "../../Assets/History.jpg";
 import image5 from "../../Assets/English.jpg";
+import image6 from "../../Assets/Cloud.jpg";
+import image7 from "../../Assets/Node.jpg";
+import image8 from "../../Assets/Others.jpg";
 
 import "./RoomCard.css";
 
 export default function RoomCard(props) {
-  const items = [image1, image2, image3, image4, image5];
+  const items = [image1, image2, image3, image4, image5,image6,image7,image8];
 
   const randomIndex = Math.floor(Math.random() * items.length);
-  const randomItem = items[randomIndex];
+  var randomItem = items[randomIndex];
+
+  if (props.roomName === 'React') {
+    randomItem = items[0];
+  } else if (props.roomName === 'Maths') {
+    randomItem = items[1];
+  } else if (props.roomName === 'Science') {
+    randomItem = items[2];
+  } else if (props.roomName === 'History') {
+    randomItem = items[3];
+  } else if (props.roomName === 'English') {
+    randomItem = items[4];
+  } 
+  else if (props.roomName === 'Cloud') {
+    randomItem = items[5];
+  }
+  else if (props.roomName === 'Node') {
+    randomItem = items[6];
+  }
+  else {
+    // Handle the case when props.roomName doesn't match any of the specified values
+    randomItem = items[7]; // Assign a default value or handle it as per your requirement
+  }
 
   return (
     <Link

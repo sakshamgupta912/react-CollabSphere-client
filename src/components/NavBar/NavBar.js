@@ -39,6 +39,11 @@ function NavBar({ currentTab, onTabChange }) {
     window.location.reload()
   };
 
+  const hello = {
+    width: "0px",
+    cssText: 'width: 0px !important',
+  };
+
   return (
     <MDBNavbar expand="lg" light bgColor="light" className="p-0">
       <img
@@ -91,8 +96,8 @@ function NavBar({ currentTab, onTabChange }) {
               </MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
-          <MDBNavbarNav className="justify-content-end next mb-2 mb-lg-0">
-            <MDBNavbarItem>
+          <MDBNavbarNav className="w-0 justify-content-end next mb-2 mb-lg-0 " style={hello} >
+            <MDBNavbarItem className="justify-content-end">
               <MDBNavbarLink onClick={handleLogout}>Logout</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>

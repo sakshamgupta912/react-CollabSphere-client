@@ -139,10 +139,10 @@ const Announcement = (props) => {
       </Button>
 
       {AnnouncementContent.length == 0 ? (
-        <div className="container d-flex align-items-center nothing-here" >
+        <div className="container d-flex nothing-here" style={{height:'90vh', alignItems:"center"}} >
           <div className="mx-auto" >Looks Like there are no posts here!</div>
         </div>
-      ) : (
+      ) : ( 
         AnnouncementContent.map(createAnnouncementCards)
       )}
 
