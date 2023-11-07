@@ -1,6 +1,6 @@
-# CollabSphere 👥🌐
+# CollabSphere - A MERN Application in Azure ☁️
 
-CollabSphere is a versatile collaboration tool platform that can be deployed either on-premises or in the cloud, ensuring data integrity within the organization. This platform offers a range of features to enhance collaboration and communication:
+CollabSphere is a versatile collaboration tool platform built using the MERN stack (MongoDB, Express.js, React, Node.js). It can be deployed either on-premises or in the cloud, ensuring data integrity within the organization. This platform offers a range of features to enhance collaboration and communication:
 
 - 🏢 **Creating Room:** Create dedicated collaboration spaces for various projects or teams.
 - 🚀 **Joining Room:** Join existing rooms to collaborate with team members.
@@ -11,23 +11,25 @@ CollabSphere is a versatile collaboration tool platform that can be deployed eit
 
 ## Deployment 🚀
 
-The client application is deployed on Azure Web App. You can access it using the following link:
+The client application is deployed on Azure Web App, ensuring scalability and reliability. You can access it using the following link:
 
 [CollabSphere Client](https://collabsphereclient.azurewebsites.net#/)
 
 ## Azure Implementation
-Resource Group:
-![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/3c66c6db-015e-44a6-acec-65840b32983b)
 
-Server App Service:
-![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/107f23b6-e38b-4229-8a90-fc889a4dd2b2)
+CollabSphere leverages various Azure services to power its functionality:
 
-Client App Service:
-![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/dfc8be42-d4aa-4d3f-90b6-caf5196871de)
+- **Resource Group:** This is used to organize and manage related Azure resources, ensuring efficient resource management.
+![Resource Group](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/3c66c6db-015e-44a6-acec-65840b32983b)
 
-Cosmos DB for MongoDB:
-![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/96f6b0b3-ee9e-4150-acd9-581ea4cc49ba)
+- **Server App Service:** This hosts the server-side application, handling backend logic and APIs.
+![Server App Service](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/107f23b6-e38b-4229-8a90-fc889a4dd2b2)
 
+- **Client App Service:** The client application is hosted here, allowing users to interact with the CollabSphere platform.
+![Client App Service](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/dfc8be42-d4aa-4d3f-90b6-caf5196871de)
+
+- **Cosmos DB for MongoDB:** This NoSQL database service stores and manages the data for CollabSphere.
+![Cosmos DB for MongoDB](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/96f6b0b3-ee9e-4150-acd9-581ea4cc49ba)
 
 ### Example Login Credentials
 
