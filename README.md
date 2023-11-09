@@ -16,7 +16,8 @@ CollabSphere is a versatile collaboration tool platform built using the MERN sta
 The client application is deployed on Azure Web App, ensuring scalability and reliability. You can access it using the following link:
 
 [CollabSphere Client](https://collabsphereclient.azurewebsites.net#/)
-Note:The site is using free Azure services due to which the site is slow and may take longer time to load then expected.
+
+**Note:The site is using free Azure services due to which the site is slow and may take longer time to load then expected.**
 
 ## Azure Implementation
 
