@@ -17,7 +17,7 @@ The client application is deployed on Azure Web App, ensuring scalability and re
 
 [CollabSphere Client](https://collabsphereclient.azurewebsites.net#/)
 
-**Note:The site is using free Azure services due to which the site is slow and may take longer time to load then expected.**
+**<span style="color:red;">Note:</span> The site is using free Azure services due to which the site is slow and may take longer time to load than expected.**
 
 ## Azure Implementation
 
