@@ -25,7 +25,7 @@ const Announcement = (props) => {
   const [announcementAlert, setAnnouncementAlert] = useState(false);
   const [AnnouncementContent, setAnnouncementContent] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [update, setUpdate] = useState(0)
+  const [update, setUpdate] = useState(0);
 
   function createAnnouncementCards(AnnouncementCard) {
     return (
@@ -37,11 +37,17 @@ const Announcement = (props) => {
         fileName={AnnouncementCard?.files[0]?.originalname}
         fileId={AnnouncementCard.files[0]?._id}
         isAdmin={isAdmin}
+        onFunctionCall={handleFunctionCall}
       />
     );
   }
 
+  const handleFunctionCall = () => {
+    setUpdate(update + 1);
+  };
+
   useEffect(() => {
+    setAnnouncementContent([]);
     async function getAnnouncements() {
       const response = await axios.post(
         "/api/teams/teamPosts",
@@ -90,7 +96,7 @@ const Announcement = (props) => {
       formData.append("teamID", props?.roomId);
       formData.append("content", message);
       formData.append("files", file);
-      console.log(file)
+      console.log(file);
 
       const response = await axios.post("/api/post/createPost", formData, {
         headers: {
@@ -105,7 +111,7 @@ const Announcement = (props) => {
         setMessage("");
         setFile(null);
         setOpen(false);
-        setUpdate(update+1)
+        setUpdate(update + 1);
       }
     }
   };
@@ -140,10 +146,13 @@ const Announcement = (props) => {
       </Button>
 
       {AnnouncementContent.length == 0 ? (
-        <div className="container d-flex nothing-here" style={{height:'90vh', alignItems:"center"}} >
-          <div className="mx-auto" >Looks Like there are no posts here!</div>
+        <div
+          className="container d-flex nothing-here"
+          style={{ height: "90vh", alignItems: "center" }}
+        >
+          <div className="mx-auto">Looks Like there are no posts here!</div>
         </div>
-      ) : ( 
+      ) : (
         AnnouncementContent.map(createAnnouncementCards)
       )}
 

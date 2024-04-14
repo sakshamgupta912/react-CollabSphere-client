@@ -118,7 +118,17 @@ const Files = (props) => {
       >
         <AddCircleOutlinedIcon style={{ color: "ff7f7f", fontSize: "50px" }} />
       </Button>
-      {FileContent.map(FileCreate)}
+      {FileContent.length == 0 ? (
+        <div
+          className="container d-flex nothing-here"
+          style={{ height: "90vh", alignItems: "center" }}
+        >
+          <div className="mx-auto">Looks Like there are no files here!</div>
+        </div>
+      ) : (
+        FileContent.map(FileCreate)
+      )}
+      {/* {FileContent.map(FileCreate)} */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Files:</DialogTitle>
         <DialogContent>

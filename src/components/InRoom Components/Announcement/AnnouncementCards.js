@@ -43,6 +43,9 @@ export default function AnnouncementCards(props) {
         validateStatus: () => true
       }
     );
+    if(response.status===200){
+      props.onFunctionCall()
+    }
   };
 
   const handleDownload = async () => {
