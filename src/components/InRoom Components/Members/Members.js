@@ -25,32 +25,39 @@ const Demo = styled("div")(({ theme }) => ({
 
 const Members = (props) => {
   const handleDeleteUser = (Contact) => {
-    const result = window.confirm(Contact.name+" will be removed from the team. Are you sure?");
-    if (result) {
-      const removeMember = async () => {
-        const response = await axios.delete(
-          "/api/teams/removeMember",
-
-          {
-            headers: {
-              "Content-Type": "application/json",
-              authorization: `Token ${token}`,
-              uid: uid,
-              teamid: props?.roomId,
-              member: Contact._id,
-            },
+    if(isAdmin===true){
+      const result = window.confirm(Contact.name+" will be removed from the team. Are you sure?");
+      if (result) {
+        const removeMember = async () => {
+          const response = await axios.delete(
+            "/api/teams/removeMember",
+  
+            {
+              headers: {
+                "Content-Type": "application/json",
+                authorization: `Token ${token}`,
+                uid: uid,
+                teamid: props?.roomId,
+                member: Contact._id,
+              },
+            }
+          );
+          if (response.status === 200) {
+           
+            alert("User removed successfully");
+            setUpdate(prev=>prev+1)
           }
-        );
-        if (response.status === 200) {
-         
-          alert("User removed successfully");
-          setUpdate(prev=>prev+1)
-        }
-      };
-      removeMember(); 
-    } else {
-      console.log("Deletion cancelled");
+        };
+        removeMember(); 
+      } else {
+        console.log("Deletion cancelled");
+      }
     }
+    else
+    {
+      console.log("Naughty ho raha hai")
+    }
+ 
   };
   function CreateCard(Contact) {
   
@@ -68,6 +75,19 @@ const Members = (props) => {
           email={Contact.email}
         />
       </div>
+    );
+  }
+  function CreateCardAdmin(Contact) {
+  
+    return (
+      
+     
+        <MemberInfoCard
+          type={Contact.type}
+          name={Contact.name}
+          email={Contact.email}
+        />
+    
     );
   }
   const [RoomLeadersContent, setRoomLeadersContent] = useState([]);
@@ -240,7 +260,7 @@ const Members = (props) => {
         <div className="d-flex justify-content-center">
           <MDBCardTitle>Room Leaders</MDBCardTitle>
         </div>
-        {RoomLeadersContent.map(CreateCard)}
+        {RoomLeadersContent.map(CreateCardAdmin)}
       </MDBCard>
 
       <MDBCard className="m-2 p-2">
