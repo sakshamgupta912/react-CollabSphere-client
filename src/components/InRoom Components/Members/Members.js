@@ -12,25 +12,64 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import UserListItem from "../../../Assets/UserListItem";
 import { styled, Typography, List } from "@mui/material";
+import Alert from "@mui/material";
+const token = Cookies.get("token");
+const uid = Cookies.get("uid");
 
-function createCard(Contact) {
-  return (
-    <MemberInfoCard
-      type={Contact.type}
-      name={Contact.name}
-      email={Contact.email}
-    />
-  );
-}
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-const token = Cookies.get("token");
-const uid = Cookies.get("uid");
+
 
 const Members = (props) => {
+  const handleDeleteUser = (Contact) => {
+    const result = window.confirm(Contact.name+" will be removed from the team. Are you sure?");
+    if (result) {
+      const removeMember = async () => {
+        const response = await axios.delete(
+          "/api/teams/removeMember",
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Token ${token}`,
+              uid: uid,
+              teamid: props?.roomId,
+              member: Contact._id,
+            },
+          }
+        );
+        if (response.status === 200) {
+         
+          alert("User removed successfully");
+          setUpdate(prev=>prev+1)
+        }
+      };
+      removeMember(); 
+    } else {
+      console.log("Deletion cancelled");
+    }
+  };
+  function CreateCard(Contact) {
+  
+    return (
+      
+      <div
+        style={{ width: "100%", margin: "0" }}
+        onClick={() => {
+          handleDeleteUser(Contact);
+        }}
+      >
+        <MemberInfoCard
+          type={Contact.type}
+          name={Contact.name}
+          email={Contact.email}
+        />
+      </div>
+    );
+  }
   const [RoomLeadersContent, setRoomLeadersContent] = useState([]);
   const [RoomMembersContent, setRoomMembersContent] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -39,6 +78,27 @@ const Members = (props) => {
   const [usersList, setUsersList] = useState([]);
   const [searchUsers, setSearchUsers] = useState("");
   const [update, setUpdate] = useState(0);
+  async function getAnnouncements() {
+    const response = await axios.post(
+      "/api/teams/teamMembers",
+      JSON.stringify({ teamID: props?.roomId }),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+          uid: uid,
+        },
+        withCredentials: true,
+      }
+    );
+
+    if (response.status === 200) {
+      console.log(response.data);
+      setIsAdmin(response.data.isAdmin);
+      setRoomLeadersContent(response.data.teamMembers.admin);
+      setRoomMembersContent(response.data.teamMembers.members);
+    }
+  }
 
   useEffect(() => {
     async function getAnnouncements() {
@@ -147,18 +207,15 @@ const Members = (props) => {
       }
     }
     async function removeMember() {
-      const response = await axios.delete(
-        "/api/teams/removeMember",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Token ${token}`,
-            uid,
-            teamid: props?.roomId,
-            member: user._id
-          },
-        }
-      );
+      const response = await axios.delete("/api/teams/removeMember", {
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Token ${token}`,
+          uid,
+          teamid: props?.roomId,
+          member: user._id,
+        },
+      });
       if (response.status === 200) {
         // setSelectedChat(response.data);
         setUpdate(update + 1);
@@ -183,14 +240,14 @@ const Members = (props) => {
         <div className="d-flex justify-content-center">
           <MDBCardTitle>Room Leaders</MDBCardTitle>
         </div>
-        {RoomLeadersContent.map(createCard)}
+        {RoomLeadersContent.map(CreateCard)}
       </MDBCard>
 
       <MDBCard className="m-2 p-2">
         <div className="d-flex justify-content-center">
           <MDBCardTitle>Members</MDBCardTitle>
         </div>
-        {RoomMembersContent.map(createCard)}
+        {RoomMembersContent.map(CreateCard)}
       </MDBCard>
 
       {isAdmin ? addAssignmentButton : <></>}
