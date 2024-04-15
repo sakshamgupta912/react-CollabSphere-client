@@ -52,6 +52,8 @@ function createFileCards(file) {
     } catch (error) {
       if (!error.response) {
         alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
       }
     }
   };
@@ -111,8 +113,10 @@ const InAssignment = (props) => {
       } catch (error) {
         if (!error.response) {
           alert("Network error. Try again!");
-        }else if (error.response.status === 404){
-          alert("Assignment Not Found!")
+        } else if (error.response.status === 404) {
+          alert("Assignment Not Found!");
+        } else {
+          alert("Server error. Try Again!");
         }
       }
     }
@@ -146,17 +150,17 @@ const InAssignment = (props) => {
             },
           }
         );
-  
+
         if (response.status === 200) {
           setButtonText("Un-Submit");
         }
       } catch (error) {
         if (!error.response) {
           alert("Network error. Try again!");
-        }else if(error.response.status === 500){
-          alert("Error submitting assignment!")
-        }else{
-          alert("Server error. Try Again!")
+        } else if (error.response.status === 500) {
+          alert("Error submitting assignment!");
+        } else {
+          alert("Server error. Try Again!");
         }
       }
     } else {
@@ -178,10 +182,10 @@ const InAssignment = (props) => {
       } catch (error) {
         if (!error.response) {
           alert("Network error. Try again!");
-        }else if(error.response.status === 500){
-          alert("Error un-submitting assignment!")
-        }else{
-          alert("Server error. Try Again!")
+        } else if (error.response.status === 500) {
+          alert("Error un-submitting assignment!");
+        } else {
+          alert("Server error. Try Again!");
         }
       }
     }

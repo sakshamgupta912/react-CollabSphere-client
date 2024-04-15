@@ -16,53 +16,56 @@ import Alert from "@mui/material";
 const token = Cookies.get("token");
 const uid = Cookies.get("uid");
 
-
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
 }));
 
-
-
 const Members = (props) => {
   const handleDeleteUser = (Contact) => {
-    if(isAdmin===true){
-      const result = window.confirm(Contact.name+" will be removed from the team. Are you sure?");
+    if (isAdmin === true) {
+      const result = window.confirm(
+        Contact.name + " will be removed from the team. Are you sure?"
+      );
       if (result) {
         const removeMember = async () => {
-          const response = await axios.delete(
-            "/api/teams/removeMember",
-  
-            {
-              headers: {
-                "Content-Type": "application/json",
-                authorization: `Token ${token}`,
-                uid: uid,
-                teamid: props?.roomId,
-                member: Contact._id,
-              },
+          try {
+            const response = await axios.delete(
+              "/api/teams/removeMember",
+
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  authorization: `Token ${token}`,
+                  uid: uid,
+                  teamid: props?.roomId,
+                  member: Contact._id,
+                },
+              }
+            );
+            if (response.status === 200) {
+              alert("User removed successfully");
+              setUpdate((prev) => prev + 1);
             }
-          );
-          if (response.status === 200) {
-           
-            alert("User removed successfully");
-            setUpdate(prev=>prev+1)
+          } catch (error) {
+            if (!error.response) {
+              alert("Network error. Try again!");
+            } else if (error.response.status === 404) {
+              alert("Unauthorized to remove!");
+            } else {
+              alert("Server error. Try Again!");
+            }
           }
         };
-        removeMember(); 
+        removeMember();
       } else {
         console.log("Deletion cancelled");
       }
+    } else {
+      console.log("Naughty ho raha hai");
     }
-    else
-    {
-      console.log("Naughty ho raha hai")
-    }
- 
   };
   function CreateCard(Contact) {
-  
     return (
-      
       <div
         style={{ width: "100%", margin: "0" }}
         onClick={() => {
@@ -78,16 +81,12 @@ const Members = (props) => {
     );
   }
   function CreateCardAdmin(Contact) {
-  
     return (
-      
-     
-        <MemberInfoCard
-          type={Contact.type}
-          name={Contact.name}
-          email={Contact.email}
-        />
-    
+      <MemberInfoCard
+        type={Contact.type}
+        name={Contact.name}
+        email={Contact.email}
+      />
     );
   }
   const [RoomLeadersContent, setRoomLeadersContent] = useState([]);
@@ -122,24 +121,32 @@ const Members = (props) => {
 
   useEffect(() => {
     async function getAnnouncements() {
-      const response = await axios.post(
-        "/api/teams/teamMembers",
-        JSON.stringify({ teamID: props?.roomId }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/teams/teamMembers",
+          JSON.stringify({ teamID: props?.roomId }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
 
-      if (response.status === 200) {
-        console.log(response.data);
-        setIsAdmin(response.data.isAdmin);
-        setRoomLeadersContent(response.data.teamMembers.admin);
-        setRoomMembersContent(response.data.teamMembers.members);
+        if (response.status === 200) {
+          console.log(response.data);
+          setIsAdmin(response.data.isAdmin);
+          setRoomLeadersContent(response.data.teamMembers.admin);
+          setRoomMembersContent(response.data.teamMembers.members);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
 
@@ -148,19 +155,27 @@ const Members = (props) => {
 
   useEffect(() => {
     async function getUsers() {
-      const response = await axios.get("/api/auth/searchUsers", {
-        params: {
-          search: searchUsers,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Token ${token}`,
-        },
-      });
+      try {
+        const response = await axios.get("/api/auth/searchUsers", {
+          params: {
+            search: searchUsers,
+          },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Token ${token}`,
+          },
+        });
 
-      if (response.status === 200) {
-        // console.log(response.data);
-        setUsersList(response.data);
+        if (response.status === 200) {
+          // console.log(response.data);
+          setUsersList(response.data);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
 
@@ -206,42 +221,52 @@ const Members = (props) => {
 
   function createUsers(user) {
     async function handleCreateChat() {
-      const response = await axios.put(
-        "/api/teams/addMember",
-        JSON.stringify({
-          member: [user._id],
-          teamID: props?.roomId,
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Token ${token}`,
-            uid,
-          },
+      try {
+        const response = await axios.put(
+          "/api/teams/addMember",
+          JSON.stringify({
+            member: [user._id],
+            teamID: props?.roomId,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Token ${token}`,
+              uid,
+            },
+          }
+        );
+        if (response.status === 200) {
+          // setSelectedChat(response.data);
+          setUpdate(update + 1);
+          setIsDialogOpen(false);
         }
-      );
-      if (response.status === 200) {
-        // setSelectedChat(response.data);
-        setUpdate(update + 1);
-        setIsDialogOpen(false);
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 400) {
+          alert("Member already exist in room!")
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
-    async function removeMember() {
-      const response = await axios.delete("/api/teams/removeMember", {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Token ${token}`,
-          uid,
-          teamid: props?.roomId,
-          member: user._id,
-        },
-      });
-      if (response.status === 200) {
-        // setSelectedChat(response.data);
-        setUpdate(update + 1);
-        setIsDialogOpen(false);
-      }
-    }
+    // async function removeMember() {
+    //   const response = await axios.delete("/api/teams/removeMember", {
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       authorization: `Token ${token}`,
+    //       uid,
+    //       teamid: props?.roomId,
+    //       member: user._id,
+    //     },
+    //   });
+    //   if (response.status === 200) {
+    //     // setSelectedChat(response.data);
+    //     setUpdate(update + 1);
+    //     setIsDialogOpen(false);
+    //   }
+    // }
     return (
       <Button onClick={handleCreateChat}>
         <UserListItem

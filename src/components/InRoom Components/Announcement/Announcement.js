@@ -49,26 +49,33 @@ const Announcement = (props) => {
   useEffect(() => {
     setAnnouncementContent([]);
     async function getAnnouncements() {
-      const response = await axios.post(
-        "/api/teams/teamPosts",
-        JSON.stringify({ teamID: props?.roomId }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/teams/teamPosts",
+          JSON.stringify({ teamID: props?.roomId }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
 
-      if (response.status === 200) {
-        console.log(response.data);
-        setIsAdmin(response.data.isAdmin);
-        setAnnouncementContent(response.data.teamPosts);
+        if (response.status === 200) {
+          console.log(response.data);
+          setIsAdmin(response.data.isAdmin);
+          setAnnouncementContent(response.data.teamPosts);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
-
     getAnnouncements();
   }, [update]);
 
@@ -98,20 +105,28 @@ const Announcement = (props) => {
       formData.append("files", file);
       console.log(file);
 
-      const response = await axios.post("/api/post/createPost", formData, {
-        headers: {
-          authorization: `Token ${token}`,
-          uid: uid,
-          uploadid: nanoid(),
-        },
-      });
+      try {
+        const response = await axios.post("/api/post/createPost", formData, {
+          headers: {
+            authorization: `Token ${token}`,
+            uid: uid,
+            uploadid: nanoid(),
+          },
+        });
 
-      if (response.status === 200) {
-        setAnnouncementAlert(false);
-        setMessage("");
-        setFile(null);
-        setOpen(false);
-        setUpdate(update + 1);
+        if (response.status === 200) {
+          setAnnouncementAlert(false);
+          setMessage("");
+          setFile(null);
+          setOpen(false);
+          setUpdate(update + 1);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
   };

@@ -31,23 +31,31 @@ const uid = Cookies.get("uid");
 
 function createFileCards(file) {
   const handleDownload = async () => {
-    const response = await axios.get(`/api/download`, {
-      responseType: "blob",
-      headers: {
-        authorization: `Token ${token}`,
-        fileid: file._id,
-      },
-    });
-    const blob = new Blob([response.data], {
-      type: response.headers["content-type"],
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.originalname; // Set the desired file name
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+    try {
+      const response = await axios.get(`/api/download`, {
+        responseType: "blob",
+        headers: {
+          authorization: `Token ${token}`,
+          fileid: file._id,
+        },
+      });
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.originalname; // Set the desired file name
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      if (!error.response) {
+        alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
+      }
+    }
   };
   return (
     <Button onClick={handleDownload}>
@@ -67,28 +75,38 @@ const InAssignment = (props) => {
 
   useEffect(() => {
     async function getAnnouncements() {
-      const response = await axios.post(
-        "/api/assignment/getAssignment",
-        JSON.stringify({
-          assignmentID: props.id,
-        }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/assignment/getAssignment",
+          JSON.stringify({
+            assignmentID: props.id,
+          }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
 
-      if (response.status === 200) {
-        setAssignmentData(response.data.assignment);
-        setIsAdmin(response.data.isAdmin);
-        console.log(response.data);
-        // setAssignmentContent(response.data.assignments);
-        if (response.data.assignment.submitted == true) {
-          setButtonText("Un-Submit");
+        if (response.status === 200) {
+          setAssignmentData(response.data.assignment);
+          setIsAdmin(response.data.isAdmin);
+          console.log(response.data);
+          // setAssignmentContent(response.data.assignments);
+          if (response.data.assignment.submitted == true) {
+            setButtonText("Un-Submit");
+          }
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 404) {
+          alert("Assignment Not Found!");
+        } else {
+          alert("Server error. Try Again!");
         }
       }
     }
@@ -110,35 +128,55 @@ const InAssignment = (props) => {
       for (let i = 0; i < assignmentData.files.length; i++) {
         formData.append("files", assignmentData.files[i]);
       }
-      const response = await axios.post(
-        "/api/assignment/submitAssignment",
-        formData,
-        {
-          headers: {
-            authorization: `Token ${token}`,
-            uid: uid,
-            uploadid: nanoid(),
-          },
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/assignment/submitAssignment",
+          formData,
+          {
+            headers: {
+              authorization: `Token ${token}`,
+              uid: uid,
+              uploadid: nanoid(),
+            },
+          }
+        );
 
-      if (response.status === 200) {
-        setButtonText("Un-Submit");
+        if (response.status === 200) {
+          setButtonText("Un-Submit");
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 500) {
+          alert("Error submitting assignment!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     } else {
-      const response = await axios.put(
-        "/api/assignment/unSubmitAssignment",
-        {},
-        {
-          headers: {
-            authorization: `Token ${token}`,
-            uid: uid,
-            assid: assignmentData._id,
-          },
+      try {
+        const response = await axios.put(
+          "/api/assignment/unSubmitAssignment",
+          {},
+          {
+            headers: {
+              authorization: `Token ${token}`,
+              uid: uid,
+              assid: assignmentData._id,
+            },
+          }
+        );
+        if (response.status === 200) {
+          setButtonText("Submit");
         }
-      );
-      if (response.status === 200) {
-        setButtonText("Submit");
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 500) {
+          alert("Error un-submitting assignment!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
   };

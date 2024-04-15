@@ -56,31 +56,40 @@ const Assignment = (props) => {
   const [AssignmentContent, setAssignmentContent] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [pageContent, setPageContent] = useState(null);
-  const [update, setUpdate] = useState(0)
+  const [update, setUpdate] = useState(0);
   let cards;
 
   useEffect(() => {
     async function getAnnouncements() {
-      const response = await axios.post(
-        "/api/teams/teamAssignments",
-        JSON.stringify({ teamID: props?.roomId }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
+      try {
+        const response = await axios.post(
+          "/api/teams/teamAssignments",
+          JSON.stringify({ teamID: props?.roomId }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
+
+        if (response.status === 200) {
+          setIsAdmin(response.data.isAdmin);
+          setAssignmentContent(response.data.teamAssignments);
+          setPageContent(
+            response.data.teamAssignments.map(createAssignmentCard)
+          );
+          cards = response.data.teamAssignments.map(createAssignmentCard);
+          // setAnnouncementContent(response.data.teamPosts);
         }
-      );
-
-      if (response.status === 200) {
-        setIsAdmin(response.data.isAdmin);
-        setAssignmentContent(response.data.teamAssignments);
-        setPageContent(response.data.teamAssignments.map(createAssignmentCard))
-        cards = response.data.teamAssignments.map(createAssignmentCard);
-
-        // setAnnouncementContent(response.data.teamPosts);
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
 
@@ -149,28 +158,36 @@ const Assignment = (props) => {
     formData.append("dueDate", assignmentData.dateAndTime);
     formData.append("files", assignmentData.files[0]);
 
-    const response = await axios.post(
-      "/api/assignment/createAssignment",
-      formData,
-      {
-        headers: {
-          authorization: `Token ${token}`,
-          uid: uid,
-          uploadid: nanoid(),
-        },
-      }
-    );
+    try {
+      const response = await axios.post(
+        "/api/assignment/createAssignment",
+        formData,
+        {
+          headers: {
+            authorization: `Token ${token}`,
+            uid: uid,
+            uploadid: nanoid(),
+          },
+        }
+      );
 
-    if (response.status === 200) {
-      setAssignmentData({
-        title: "",
-        description: "",
-        dateAndTime: null,
-        grade: "",
-        files: [],
-      });
-      setIsDialogOpen(false);
-      setUpdate(update+1)
+      if (response.status === 200) {
+        setAssignmentData({
+          title: "",
+          description: "",
+          dateAndTime: null,
+          grade: "",
+          files: [],
+        });
+        setIsDialogOpen(false);
+        setUpdate(update + 1);
+      }
+    } catch (error) {
+      if (!error.response) {
+        alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
+      }
     }
     // Clear the form and close the dialog
   };

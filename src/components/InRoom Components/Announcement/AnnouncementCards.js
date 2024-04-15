@@ -31,41 +31,57 @@ export default function AnnouncementCards(props) {
   }, []);
 
   const handleDelete = async () => {
-    const response = await axios.post(
-      `/api/post/deletePost`,
-      JSON.stringify({ postID: props?.postID }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Token ${token}`,
-          uid,
-        },
-        validateStatus: () => true
+    try {
+      const response = await axios.post(
+        `/api/post/deletePost`,
+        JSON.stringify({ postID: props?.postID }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Token ${token}`,
+            uid,
+          },
+          validateStatus: () => true,
+        }
+      );
+      if (response.status === 200) {
+        props.onFunctionCall();
       }
-    );
-    if(response.status===200){
-      props.onFunctionCall()
+    } catch (error) {
+      if (!error.response) {
+        alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
+      }
     }
   };
 
   const handleDownload = async () => {
-    const response = await axios.get(`/api/download`, {
-      responseType: "blob",
-      headers: {
-        authorization: `Token ${token}`,
-        fileid: props.fileId,
-      },
-    });
-    const blob = new Blob([response.data], {
-      type: response.headers["content-type"],
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = props.fileName; // Set the desired file name
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
+    try {
+      const response = await axios.get(`/api/download`, {
+        responseType: "blob",
+        headers: {
+          authorization: `Token ${token}`,
+          fileid: props.fileId,
+        },
+      });
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = props.fileName; // Set the desired file name
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      if (!error.response) {
+        alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
+      }
+    }
   };
   return (
     <MDBCard className="my-2">
