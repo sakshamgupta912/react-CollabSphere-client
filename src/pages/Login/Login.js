@@ -78,11 +78,16 @@ function Login() {
         Cookies.set("email", `${response.data.user.email}`, { expires: 7 });
         Cookies.set("token", `${response.data.user.token}`, { expires: 7 });
         window.location.reload();
-      } else if (response.status === 401) {
+      } 
+      else if (response.status === 401) {
         setLoginAlert(
           <Alert severity="error">Invalid Email Address or Password</Alert>
         );
-      } else {
+      } else if (response.status === 404) {
+        setLoginAlert(
+          <Alert severity="error">User Not Found. Please Register!</Alert>
+        );
+      } else  {
         setLoginAlert(<Alert severity="error">Server error. Try Again!</Alert>);
       }
     }

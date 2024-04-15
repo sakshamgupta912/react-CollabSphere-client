@@ -15,23 +15,31 @@ const uid = Cookies.get("uid");
 const Assignment = () => {
   const [assignmentContent, setAssignmentContent] = useState([]);
   const [pageContent, setPageContent] = useState(<></>);
-  let cards
+  let cards;
 
   useEffect(() => {
     async function getAnnouncements() {
-      const response = await axios.get("/api/assignment/assignments", {
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-          uid: uid,
-        },
-        withCredentials: true,
-      });
+      try {
+        const response = await axios.get("/api/assignment/assignments", {
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+            uid: uid,
+          },
+          withCredentials: true,
+        });
 
-      if (response.status === 200) {
-        setAssignmentContent(response.data.assignments);
-        cards = response.data.assignments.map(createAssignmentCard);
-        setPageContent(response.data.assignments.map(createAssignmentCard));
+        if (response.status === 200) {
+          setAssignmentContent(response.data.assignments);
+          cards = response.data.assignments.map(createAssignmentCard);
+          setPageContent(response.data.assignments.map(createAssignmentCard));
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        }else{
+          alert("Error Occurred. Try again!")
+        }
       }
     }
 
@@ -67,7 +75,7 @@ const Assignment = () => {
   }
 
   const setCardsPage = () => {
-      setPageContent(cards)
+    setPageContent(cards);
   };
 
   return <div className="m-3">{pageContent}</div>;

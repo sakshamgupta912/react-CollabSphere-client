@@ -48,29 +48,37 @@ function Home() {
   const [joinAlert, setJoinAlert] = useState(false);
   const [createAlert, setCreateAlert] = useState(false);
   const [roomCollection, setRoomCollection] = useState([]);
+  const [update, setUpdate] = useState(0);
 
   useEffect(() => {
     async function getTeams() {
-      const response = await axios.post(
-        "/api/teams/getTeams",
-        {},
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/teams/getTeams",
+          {},
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
 
-      if (response.status === 200) {
-        setRoomCollection(response.data);
+        if (response.status === 200) {
+          setRoomCollection(response.data);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 500) {
+          alert("Error Occurred. Try Again!");
+        }
       }
     }
-
     getTeams();
-  }, []);
+  }, [update]);
 
   function hasWhiteSpace(s) {
     return /\s/g.test(s);
@@ -98,21 +106,35 @@ function Home() {
         <Alert severity="error">Code should not contain spaces!</Alert>
       );
     } else {
-      const response = await axios.put(
-        "/api/teams/joinTeam",
-        JSON.stringify({ code: classCode }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
+      setJoinAlert(false);
+      try {
+        const response = await axios.put(
+          "/api/teams/joinTeam",
+          JSON.stringify({ code: classCode }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          handleCloseJoinDialog();
+          // window.location.reload();
+          setUpdate(update + 1);
         }
-      );
-      if (response.status === 200) {
-        handleCloseJoinDialog();
-        window.location.reload();
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 400) {
+          alert("You have already joined this room!");
+        } else if (error.response.status === 404) {
+          alert("Room does not exists!");
+        } else {
+          alert("Server Error. Try Again Later!");
+        }
       }
     }
   };
@@ -137,22 +159,32 @@ function Home() {
         <Alert severity="error">Room name should not be empty!</Alert>
       );
     } else {
-      const response = await axios.post(
-        "/api/teams/createTeams",
-        JSON.stringify({ name: roomName }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
+      setCreateAlert();
+      try {
+        const response = await axios.post(
+          "/api/teams/createTeams",
+          JSON.stringify({ name: roomName }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          // navigate("/landingpage");
+          // window.location.reload();
+          setUpdate(update + 1);
+          handleCloseCreateDialog();
         }
-      );
-      if (response.status === 200) {
-        // navigate("/landingpage");
-        window.location.reload();
-        handleCloseCreateDialog();
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 500) {
+          alert("Error occured. Try Again!");
+        }
       }
     }
   };

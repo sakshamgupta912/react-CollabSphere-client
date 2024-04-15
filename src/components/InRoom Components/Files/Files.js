@@ -31,31 +31,38 @@ const Files = (props) => {
   const [open, setOpen] = useState(false);
   const [FileContent, setFileContent] = useState([]);
   const [files, setFiles] = useState(null);
-  const [update,setUpdate] = useState(0)
+  const [update, setUpdate] = useState(0);
 
   useEffect(() => {
     async function getAnnouncements() {
-      const response = await axios.post(
-        "/api/teams/teamFiles",
-        JSON.stringify({ teamid: props?.roomId }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-            authorization: `Bearer ${token}`,
-            uid: uid,
-          },
-          withCredentials: true,
-        }
-      );
+      try {
+        const response = await axios.post(
+          "/api/teams/teamFiles",
+          JSON.stringify({ teamid: props?.roomId }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+              authorization: `Bearer ${token}`,
+              uid: uid,
+            },
+            withCredentials: true,
+          }
+        );
 
-      if (response.status === 200) {
-        console.log(response.data[0].files);
-        setFileContent(response.data[0].files)
-        // setIsAdmin(response.data.isAdmin);
-        // setAnnouncementContent(response.data.teamPosts);
+        if (response.status === 200) {
+          console.log(response.data[0].files);
+          setFileContent(response.data[0].files);
+          // setIsAdmin(response.data.isAdmin);
+          // setAnnouncementContent(response.data.teamPosts);
+        }
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else {
+          alert("Server error. Try Again!");
+        }
       }
     }
-
     getAnnouncements();
   }, [update]);
 
@@ -73,7 +80,7 @@ const Files = (props) => {
     onDrop: (acceptedFiles) => {
       // Handle the dropped file(s) here
       setFiles(acceptedFiles);
-      console.log(files)
+      console.log(files);
     },
   });
 
@@ -83,18 +90,29 @@ const Files = (props) => {
     for (let i = 0; i < files.length; i++) {
       formData.append("files", files[i]);
     }
+    try {
+      const response = await axios.post(
+        "/api/teams/teamUploadFiles",
+        formData,
+        {
+          headers: {
+            authorization: `Token ${token}`,
+            uid: uid,
+            uploadid: nanoid(),
+          },
+        }
+      );
 
-    const response = await axios.post("/api/teams/teamUploadFiles", formData, {
-      headers: {
-        authorization: `Token ${token}`,
-        uid: uid,
-        uploadid: nanoid(),
-      },
-    });
-
-    if(response.status === 200){
-      setUpdate(update+1)
-      handleClose()
+      if (response.status === 200) {
+        setUpdate(update + 1);
+        handleClose();
+      }
+    } catch (error) {
+      if (!error.response) {
+        alert("Network error. Try again!");
+      } else {
+        alert("Server error. Try Again!");
+      }
     }
   };
 
