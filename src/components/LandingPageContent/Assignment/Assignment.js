@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AssignmentCards from "./AssignmentCards";
 import Cookies from "js-cookie";
 import axios from "../../../api/axios";
+import Grid from "@mui/material/Grid";
 // import AssignmentContent from "./AssignmentContent";
 import Button from "@mui/material/Button";
 import AddCircleOutlinedIcon from "@mui/icons-material/AddCircleOutlined";
@@ -37,8 +38,8 @@ const Assignment = () => {
       } catch (error) {
         if (!error.response) {
           alert("Network error. Try again!");
-        }else{
-          alert("Error Occurred. Try again!")
+        } else {
+          alert("Error Occurred. Try again!");
         }
       }
     }
@@ -78,7 +79,11 @@ const Assignment = () => {
     setPageContent(cards);
   };
 
-  return <div className="m-3">{pageContent}</div>;
+  return (
+    <div className="m-3">
+      {pageContent}
+    </div>
+  );
 };
 
 export default Assignment;

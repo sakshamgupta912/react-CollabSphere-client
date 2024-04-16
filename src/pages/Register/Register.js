@@ -66,26 +66,44 @@ function Register() {
     } else if (formData.password !== formData.cnfpassword) {
       setLoginAlert(<Alert severity="error">Password does not match!</Alert>);
     } else {
-      const response = await axios.post(
-        "/api/auth/register",
-        JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-          validateStatus: () => true,
+      try {
+        const response = await axios.post(
+          "/api/auth/register",
+          JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          }),
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true,
+            validateStatus: () => true,
+          }
+        );
+        if (response.status === 200) {
+          setLoginAlert(false);
+          navigate("/");
+        } else if (response.status === 500) {
+          setLoginAlert(
+            <Alert severity="error">Error occured. Try Again</Alert>
+          );
+        } else {
+          setLoginAlert(
+            <Alert severity="error">Server error. Try Again!</Alert>
+          );
         }
-      );
-      if (response.status === 200) {
-        setLoginAlert(false);
-        navigate("/");
-      } else if (response.status === 500) {
-        setLoginAlert(<Alert severity="error">Error occured. Try Again</Alert>);
-      } else {
-        setLoginAlert(<Alert severity="error">Server error. Try Again!</Alert>);
+      } catch (error) {
+        if (!error.response) {
+          alert("Network error. Try again!");
+        } else if (error.response.status === 500) {
+          setLoginAlert(
+            <Alert severity="error">Error occured. Try Again</Alert>
+          );
+        } else {
+          setLoginAlert(
+            <Alert severity="error">Server error. Try Again!</Alert>
+          );
+        }
       }
     }
   };
@@ -197,8 +215,8 @@ function Register() {
                 className="w-100 "
                 size="md"
                 style={{ background: "grey" }}
-                onClick={()=>{
-                  navigate('/')
+                onClick={() => {
+                  navigate("/");
                 }}
               >
                 Already have an account?

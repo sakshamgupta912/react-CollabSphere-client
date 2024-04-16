@@ -24,10 +24,11 @@ import Button from "@mui/material/Button";
 import { Grid, Typography, styled, List } from "@mui/material";
 import UserListItem from "../../../Assets/UserListItem";
 import "./ChatSocket.css";
+import socketApi from "../../../api/socketApi";
 const uid = Cookies.get("uid");
 const token = Cookies.get("token");
 
-const urlIO = "http://localhost:9000";
+const urlIO = socketApi;
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,

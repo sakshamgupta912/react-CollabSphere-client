@@ -279,7 +279,22 @@ function Home() {
       </div>
 
       <Grid className="m-0 w-100" container spacing={3}>
-        {roomCollection.length != 0 ? roomCollection.map(createRoom) : <></>}
+        {roomCollection.length != 0 ? (
+          roomCollection.map(createRoom)
+        ) : (
+          <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justifyContent="center"
+            sx={{ minHeight: "100vh" }}
+          >
+            <Grid item xs={3}>
+              <div>Looks Like you haven't joined any room!</div>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
 
       <Dialog
