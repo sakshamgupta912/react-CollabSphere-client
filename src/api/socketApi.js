@@ -1,3 +1,3 @@
-const socketApi = "http://127.0.0.1:9000"
+const socketApi = "https://collabsphere-server.onrender.com"
 
 export default socketApi; 
