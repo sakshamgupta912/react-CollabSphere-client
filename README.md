@@ -3,6 +3,7 @@
 CollabSphere is a versatile collaboration tool platform built using the MERN stack (MongoDB, Express.js, React, Node.js). It can be deployed either on-premises or in the cloud, ensuring data integrity within the organization. This platform offers a range of features to enhance collaboration and communication:
 
 ![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/f55dd077-9190-4ef7-a183-89e39da51d03)
+
 - 🏢 **Creating Room:** Create dedicated collaboration spaces for various projects or teams.
 - 🚀 **Joining Room:** Join existing rooms to collaborate with team members.
 - 🔊 **Announcements:** Make important announcements within rooms to keep all members informed.
