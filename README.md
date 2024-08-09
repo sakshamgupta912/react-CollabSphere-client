@@ -4,6 +4,7 @@ CollabSphere is a versatile collaboration tool platform built using the MERN sta
 
 ![image](https://github.com/sakshamgupta912/react-CollabSphere-client/assets/112967198/f55dd077-9190-4ef7-a183-89e39da51d03)
 
+
 - 🏢 **Creating Room:** Create dedicated collaboration spaces for various projects or teams.
 - 🚀 **Joining Room:** Join existing rooms to collaborate with team members.
 - 🔊 **Announcements:** Make important announcements within rooms to keep all members informed.
