@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define your Docker Hub credentials and image details
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Use Jenkins credentials ID
+        DOCKER_IMAGE_NAME = 'sakshamgupta912/collabsphere-client'
+        DOCKER_IMAGE_TAG = 'latest' // You can use Git commit SHA or another tag here if desired
+
+        // Define SonarQube properties
+        SONARQUBE_SERVER = 'SonarQube' // Jenkins configuration name for SonarQube server
+        SONARQUBE_PROJECT_KEY = 'CollabSphere-Client' // Replace with your SonarQube project key
+        SONARQUBE_TOKEN = credentials('gene-token') // Use Jenkins credentials ID for SonarQube token
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/sakshamgupta912/react-CollabSphere-client', branch: 'v2' 
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Run SonarQube Scanner for a React project
+                    withSonarQubeEnv(SONARQUBE_SERVER) { // This sets up the SonarQube environment
+                        sh """
+                            /opt/sonar-scanner/bin/sonar-scanner \
+                                -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
+                                -Dsonar.sources=. \
+                                -Dsonar.host.url=http://localhost:9000 \
+                                -Dsonar.login=${SONARQUBE_TOKEN} \
+                                -Dsonar.language=js \
+                                -Dsonar.sourceEncoding=UTF-8
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    // Build the Docker image
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                }
+            }
+        }
+
+        // stage('Run Image') {
+        //     steps {
+        //         script {
+        //             sh "docker run -d -p 80:80 ${DOCKER_IMAGE_NAME}"
+        //         }
+        //     }
+        // }
+    }
+
+    post {
+        success {
+            echo "CollabSphere client pipeline ended successfully."
+        }
+        failure {
+            echo "Build failed."
+        }
+    }
+}
