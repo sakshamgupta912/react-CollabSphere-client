@@ -2,15 +2,10 @@ pipeline {
     agent any
 
     environment {
-        // Define your Docker Hub credentials and image details
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Use Jenkins credentials ID
         DOCKER_IMAGE_NAME = 'sakshamgupta912/collabsphere-client'
-        DOCKER_IMAGE_TAG = 'latest' // You can use Git commit SHA or another tag here if desired
-
-        // Define SonarQube properties
-        SONARQUBE_SERVER = 'SonarQube' // Jenkins configuration name for SonarQube server
-        SONARQUBE_PROJECT_KEY = 'CollabSphere-Client' // Replace with your SonarQube project key
-        SONARQUBE_TOKEN = credentials('gene-token') // Use Jenkins credentials ID for SonarQube token
+        DOCKER_IMAGE_TAG = 'latest'
+        SONARQUBE_SERVER = 'SonarQube'
+        SONARQUBE_PROJECT_KEY = 'CollabSphere-Client'
     }
 
     stages {
@@ -22,16 +17,14 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    // Run SonarQube Scanner for a React project
-                    withSonarQubeEnv(SONARQUBE_SERVER) { // This sets up the SonarQube environment
+                withCredentials([string(credentialsId: 'gene-token', variable: 'SONARQUBE_TOKEN')]) {
+                    withSonarQubeEnv(SONARQUBE_SERVER) {
                         sh """
                             /opt/sonar-scanner/bin/sonar-scanner \
                                 -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
                                 -Dsonar.sources=. \
                                 -Dsonar.host.url=http://localhost:9000 \
                                 -Dsonar.login=${SONARQUBE_TOKEN} \
-                                -Dsonar.language=js \
                                 -Dsonar.sourceEncoding=UTF-8
                         """
                     }
@@ -42,17 +35,27 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    // Build the Docker image
                     sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
                 }
             }
         }
 
-        stage('Run Image') {
+        stage('Run Container') {
             steps {
                 script {
-                    sh "docker run -d -p 80:80 ${DOCKER_IMAGE_NAME}"
+                    sh "docker run -d -p 80:80 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
+            }
+        }
+
+        stage('UI Testing') {
+            steps {
+                sh "pip install selenium webdriver-manager"
+                sh '''
+                Xvfb :99 -screen 0 1920x1080x24 &
+                export DISPLAY=:99
+                python3 selenium.test.py
+                '''
             }
         }
     }
@@ -63,6 +66,13 @@ pipeline {
         }
         failure {
             echo "Build failed."
+        }
+        always {
+             script {
+                sh """
+                    docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" | xargs -r docker stop
+                """
+            }
         }
     }
 }
