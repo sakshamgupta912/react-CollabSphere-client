@@ -1,5 +1,3 @@
-# selenium_login_test.py
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options
@@ -7,21 +5,24 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, WebDriverException, TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Setup Chromium options for headless mode
 chrome_options = Options()
+chrome_options.binary_location = "/usr/bin/google-chrome"  # Update this path if necessary
 chrome_options.add_argument("--headless")  # Run Chromium in headless mode
 chrome_options.add_argument("--no-sandbox")  # Necessary for running as root
 chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
 chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-
-
+chrome_options.add_argument("--remote-debugging-port=9222")  # Helps in remote environments
 
 # Test function for login
 def test_login(email, password, expected_success):
     print(f"Running login test with email: {email} and password: {password}...")
+
     # Initialize WebDriver with Chromium in headless mode
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+
     try:
         # Open the browser and navigate to the login page
         driver.get("http://localhost/#/login")  # Replace with your actual login URL
@@ -75,6 +76,3 @@ if __name__ == "__main__":
 
     # Test with incorrect credentials
     test_login("invalid_email@example.com", "wrong_password", expected_success=False)
-
-    # Quit the driver at the end of all tests
-    
