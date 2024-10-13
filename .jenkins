@@ -5,6 +5,9 @@ pipeline {
         DOCKER_IMAGE_NAME = 'sakshamgupta912/collabsphere-client'
         SONARQUBE_SERVER = 'SonarQube'
         SONARQUBE_PROJECT_KEY = 'CollabSphere-Client'
+        DOCKER_HUB_CREDENTIALS_ID = 'docker-hub-credentials'
+        AZURE_CREDENTIALS_ID= 'c2b432ce-81c9-44b2-9da6-bf316d588dec'
+        
     }
 
     stages {
@@ -45,6 +48,16 @@ pipeline {
             }
         }
 
+        stage('Docker Login') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                    }
+                }
+            }
+        }
+
         stage('Push Docker Image') {
             steps {
                 script {
@@ -53,6 +66,20 @@ pipeline {
                 }
             }
         }
+        
+        stage('Azure Login') {
+            steps {
+                script {
+                    withCredentials([[$class: 'AzureServicePrincipal', 
+                                      credentialsId: AZURE_CREDENTIALS_ID]]) {
+                        sh '''
+                        az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+                        '''
+                    }
+                }
+            }
+        }
+
 
         stage('Deploy to AKS') {
             steps {
