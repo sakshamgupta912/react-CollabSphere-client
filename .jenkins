@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_NAME = 'sakshamgupta912/collabsphere-client'
-        DOCKER_IMAGE_TAG = 'latest'
+        DOCKER_IMAGE_TAG = ''  // Will be set dynamically
         SONARQUBE_SERVER = 'SonarQube'
         SONARQUBE_PROJECT_KEY = 'CollabSphere-Client'
     }
@@ -11,7 +11,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/sakshamgupta912/react-CollabSphere-client', branch: 'v2' 
+                script {
+                    git url: 'https://github.com/sakshamgupta912/react-CollabSphere-client', branch: 'v2' 
+                    env.DOCKER_IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                }
             }
         }
 
@@ -40,22 +43,22 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
+        stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker run -d -p 80:80 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
 
-        stage('UI Testing') {
+        stage('Deploy to AKS') {
             steps {
-                sh "pip install selenium webdriver-manager"
-                sh '''
-                Xvfb :99 -screen 0 1920x1080x24 &
-                export DISPLAY=:99
-                python3 selenium.test.py
-                '''
+                script {
+                    // Update Kubernetes deployment with the specific commit hash tag
+                    sh '''
+                    kubectl set image deployment/collabsphere-client collabsphere-client=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} --record
+                    '''
+                }
             }
         }
     }
@@ -68,7 +71,7 @@ pipeline {
             echo "Build failed."
         }
         always {
-             script {
+            script {
                 sh """
                     docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" | xargs -r docker stop
                 """
