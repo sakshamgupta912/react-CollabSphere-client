@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_IMAGE_NAME = 'sakshamgupta912/collabsphere-client'
-        DOCKER_IMAGE_TAG = ''  // Will be set dynamically
         SONARQUBE_SERVER = 'SonarQube'
         SONARQUBE_PROJECT_KEY = 'CollabSphere-Client'
     }
@@ -13,7 +12,9 @@ pipeline {
             steps {
                 script {
                     git url: 'https://github.com/sakshamgupta912/react-CollabSphere-client', branch: 'v2' 
+                    // Dynamically set DOCKER_IMAGE_TAG based on the Git commit SHA
                     env.DOCKER_IMAGE_TAG = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                    echo "Docker Image Tag: ${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -38,7 +39,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                    echo "Building Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
+                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} ."
                 }
             }
         }
@@ -46,7 +48,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    echo "Pushing Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
+                    sh "docker push ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
                 }
             }
         }
@@ -54,10 +57,10 @@ pipeline {
         stage('Deploy to AKS') {
             steps {
                 script {
-                    // Update Kubernetes deployment with the specific commit hash tag
-                    sh '''
-                    kubectl set image deployment/collabsphere-client collabsphere-client=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} --record
-                    '''
+                    echo "Deploying Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} to AKS"
+                    sh """
+                    kubectl set image deployment/collabsphere-client collabsphere-client=${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} --record
+                    """
                 }
             }
         }
@@ -73,7 +76,7 @@ pipeline {
         always {
             script {
                 sh """
-                    docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}" | xargs -r docker stop
+                    docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}" | xargs -r docker stop
                 """
             }
         }
