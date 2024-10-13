@@ -48,7 +48,16 @@ pipeline {
                 }
             }
         }
-
+        stage('UI Testing') {
+            steps {
+                sh "pip install selenium webdriver-manager"
+                sh '''
+                Xvfb :99 -screen 0 1920x1080x24 &
+                export DISPLAY=:99
+                python3 selenium.test.py
+                '''
+            }
+        }
         stage('Docker Login') {
             steps {
                 script {
@@ -125,7 +134,15 @@ pipeline {
             echo "Build failed."
         }
         always {
+            cleanWs() // Clean up workspace before and after every build
             script {
+                echo "Cleaning up Docker resources..."
+                sh '''
+                    docker container prune -f
+                    docker image prune -a -f
+                    docker volume prune -f
+                    docker builder prune -f
+                '''
                 sh """
                     docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}" | xargs -r docker stop
                 """
