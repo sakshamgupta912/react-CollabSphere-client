@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: collabsphere-client
-        image: sakshamgupta912/collabsphere-client:latest
+        image: sakshamgupta912/collabsphere-client:${DOCKER_IMAGE_TAG}
         ports:
         - containerPort: 80

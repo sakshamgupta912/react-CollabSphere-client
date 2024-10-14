@@ -9,7 +9,7 @@ pipeline {
         AZURE_CREDENTIALS_ID= 'c2b432ce-81c9-44b2-9da6-bf316d588dec'
         RESOURCE_GROUP = 'Flexi-DevOps'  // Replace with your Azure resource group
         AKS_CLUSTER_NAME = 'collabsphere-client'  // Replace with your AKS cluster name
-    }
+    }               
 
     stages {
         stage('Checkout') {
@@ -31,20 +31,30 @@ pipeline {
                             /opt/sonar-scanner/bin/sonar-scanner \
                                 -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
                                 -Dsonar.sources=. \
-                                -Dsonar.host.url=http://localhost:9000 \
+                                -Dsonar.host.url=http://20.70.234.173:9000 \
                                 -Dsonar.login=${SONARQUBE_TOKEN} \
-                                -Dsonar.sourceEncoding=UTF-8
+                                -Dsonar.sourceEncoding=UTF-8 \
+                                -Dsonar.language=py,js
                         """
                     }
                 }
             }
         }
 
+
         stage('Docker Build') {
             steps {
                 script {
                     echo "Building Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
                     sh "docker build -t ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} ."
+                }
+            }
+        }
+        stage('Run Image') {
+            steps {
+                script {
+                     env.CONTAINER_ID = sh(returnStdout: true, script: "docker run -d -p 80:80 ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}").trim()
+                     echo "Started container with ID: ${env.CONTAINER_ID}"
                 }
             }
         }
@@ -57,6 +67,14 @@ pipeline {
                 python3 selenium.test.py
                 '''
             }
+        }
+        stage('Docker Stop') {
+            steps{
+                script {
+                         sh "docker stop ${env.CONTAINER_ID}"
+                         echo "Stopped container with ID: ${env.CONTAINER_ID}"
+                    }
+                }
         }
         stage('Docker Login') {
             steps {
@@ -104,16 +122,15 @@ pipeline {
 
         stage('Deploy to AKS') {
             steps {
-                
                 script {
                     echo "Deploying Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} to AKS"
+                    
+                    // Replace the image tag placeholder in deployment.yaml with the actual Docker image tag
                     sh """
-                    kubectl set image deployment/collabsphere-client collabsphere-client=${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} --record
+                    sed -i 's|\\${DOCKER_IMAGE_TAG}|${DOCKER_IMAGE_TAG}|g' deployment.yaml
                     """
-                }
-            
-                script {
-                    // Apply Kubernetes deployment and service YAML files
+                    
+                    // Apply Kubernetes deployment and service YAML files with the updated image tag
                     sh '''
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
@@ -143,9 +160,6 @@ pipeline {
                     docker volume prune -f
                     docker builder prune -f
                 '''
-                sh """
-                    docker ps -q --filter "ancestor=${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}" | xargs -r docker stop
-                """
             }
         }
     }
