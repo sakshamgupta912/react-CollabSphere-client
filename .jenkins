@@ -47,6 +47,7 @@ pipeline {
                 script {
                     echo "Building Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
                     sh "docker build -t ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} ."
+                    sh "docker tag ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG} ${DOCKER_IMAGE_NAME}:latest"
                 }
             }
         }
@@ -91,6 +92,7 @@ pipeline {
                 script {
                     echo "Pushing Docker image ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
                     sh "docker push ${DOCKER_IMAGE_NAME}:${env.DOCKER_IMAGE_TAG}"
+                    sh "docker push ${DOCKER_IMAGE_NAME}:latest"
                 }
             }
         }
@@ -127,7 +129,11 @@ pipeline {
                     
                     // Replace the image tag placeholder in deployment.yaml with the actual Docker image tag
                     sh """
+<<<<<<< HEAD
                     sed -i 's|\\${DOCKER_IMAGE_TAG}|${DOCKER_IMAGE_TAG}|g' deployment.yaml
+=======
+                    kubectl set image deployment/collabsphere-client collabsphere-client=${DOCKER_IMAGE_NAME}:latest --record
+>>>>>>> f885ee219fc1b7810d397ec904ccbffabb7d8a7d
                     """
                     
                     // Apply Kubernetes deployment and service YAML files with the updated image tag
