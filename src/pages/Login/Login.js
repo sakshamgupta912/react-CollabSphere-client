@@ -192,11 +192,7 @@ function Login() {
                   navigate("/Register");
                 }}
               >
-<<<<<<< HEAD
-                Don't have an account? Register Now !
-=======
                 Don't have an account? Register!
->>>>>>> 675e6333ffbfe643faed672eb0c777abeb7215b7
               </MDBBtn>
             </MDBCardBody>
           </MDBCard>
